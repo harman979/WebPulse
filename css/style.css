@@ -1,0 +1,144 @@
+/* WebPulse Core Design System - Tokens & Base Styles */
+:root {
+    --bg-dark: #0f172a;
+    --bg-card: #1e293b;
+    --bg-card-hover: #334155;
+    --border-color: #334155;
+    
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-bright: #ffffff;
+    
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --accent: #8b5cf6;
+    
+    --good: #22c55e;
+    --good-bg: rgba(34, 197, 94, 0.15);
+    --needs-improvement: #eab308;
+    --needs-improvement-bg: rgba(234, 179, 8, 0.15);
+    --poor: #ef4444;
+    --poor-bg: rgba(239, 68, 68, 0.15);
+    
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.18);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font-family);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: #60a5fa;
+}
+
+/* Base Layout Container */
+.app-header {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-bright);
+}
+
+.logo-icon {
+    font-size: 1.5rem;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-link {
+    color: var(--text-muted);
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--text-bright);
+    background: var(--bg-card);
+}
+
+.nav-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.hamburger-bar {
+    width: 24px;
+    height: 2px;
+    background-color: var(--text-main);
+    border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+    .nav-toggle {
+        display: flex;
+    }
+    
+    .main-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--bg-card);
+        flex-direction: column;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .main-nav.open {
+        display: flex;
+    }
+}

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebPulse Real-Time Analyzer — Measure Core Web Vitals, performance score, loading metrics, and resource bottlenecks.">
+    <title>Analyzer — WebPulse Performance Dashboard</title>
+    <!-- CSS Design System -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/analyzer.css">
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header class="app-header">
+        <div class="header-container">
+            <a href="index.html" class="brand-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">WebPulse</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="analyzer.html" class="nav-link active">Analyzer</a>
+                <a href="reports.html" class="nav-link">Reports</a>
+            </nav>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+        </div>
+    </header>
+
+    <main id="mainContent" class="dashboard-main">
+        <div class="dashboard-container">
+            <!-- Context Notice Banner -->
+            <div class="info-banner" id="securityBanner">
+                <span class="info-icon">ℹ️</span>
+                <div class="info-text">
+                    <strong>Browser Context Notice:</strong> WebPulse measures performance metrics for the <em>current page context</em> using native Performance APIs in accordance with browser same-origin security policies.
+                </div>
+            </div>
+
+            <!-- Controls Toolbar -->
+            <section class="toolbar-section">
+                <div class="toolbar-left">
+                    <h1>Performance Analyzer</h1>
+                    <span class="status-badge" id="analysisStatus">Ready</span>
+                </div>
+                <div class="toolbar-actions">
+                    <button class="btn btn-primary" id="runAnalysisBtn">
+                        <span class="btn-icon">⚡</span> Run Analysis
+                    </button>
+                    <button class="btn btn-secondary" id="saveReportBtn" disabled>
+                        <span class="btn-icon">💾</span> Save Report
+                    </button>
+                </div>
+            </section>
+
+            <!-- Score & Highlights Grid -->
+            <div class="grid-layout top-overview-grid">
+                <!-- Performance Score Gauge Card -->
+                <section class="card score-card" id="scoreCard">
+                    <h2>WebPulse Score</h2>
+                    <div class="score-gauge-container">
+                        <div class="score-circle" id="scoreCircle">
+                            <span class="score-value" id="scoreValue">--</span>
+                            <span class="score-max">/ 100</span>
+                        </div>
+                    </div>
+                    <div class="score-rating" id="scoreRating">Awaiting Analysis</div>
+                    <p class="score-formula-tip">Weighted: CWV 40% | Loading 25% | Resources 20% | Issues 15%</p>
+                </section>
+
+                <!-- Core Web Vitals Card Grid -->
+                <section class="card cwv-dashboard-card">
+                    <h2>Core Web Vitals</h2>
+                    <div class="metrics-grid" id="cwvGrid">
+                        <div class="metric-box" id="lcpBox">
+                            <div class="metric-label">LCP</div>
+                            <div class="metric-val" id="lcpVal">--</div>
+                            <div class="metric-status" id="lcpStatus">Pending</div>
+                            <div class="metric-desc">Largest Contentful Paint</div>
+                        </div>
+                        <div class="metric-box" id="clsBox">
+                            <div class="metric-label">CLS</div>
+                            <div class="metric-val" id="clsVal">--</div>
+                            <div class="metric-status" id="clsStatus">Pending</div>
+                            <div class="metric-desc">Cumulative Layout Shift</div>
+                        </div>
+                        <div class="metric-box" id="inpBox">
+                            <div class="metric-label">INP</div>
+                            <div class="metric-val" id="inpVal">--</div>
+                            <div class="metric-status" id="inpStatus">Pending</div>
+                            <div class="metric-desc">Interaction to Next Paint</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Loading Metrics Grid -->
+            <section class="card loading-metrics-card">
+                <h2>Loading Performance Metrics</h2>
+                <div class="loading-grid" id="loadingGrid">
+                    <div class="loading-box">
+                        <span class="loading-title">FCP (First Contentful Paint)</span>
+                        <span class="loading-value" id="fcpVal">--</span>
+                    </div>
+                    <div class="loading-box">
+                        <span class="loading-title">TTFB (Time to First Byte)</span>
+                        <span class="loading-value" id="ttfbVal">--</span>
+                    </div>
+                    <div class="loading-box">
+                        <span class="loading-title">DOM Loading Time</span>
+                        <span class="loading-value" id="domVal">--</span>
+                    </div>
+                    <div class="loading-box">
+                        <span class="loading-title">Total Page Load Duration</span>
+                        <span class="loading-value" id="pageLoadVal">--</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resource Analyzer Section -->
+            <section class="card resource-analyzer-card">
+                <div class="card-header-flex">
+                    <h2>Resource Analyzer</h2>
+                    <div class="resource-summary-badge" id="resourceSummaryBadge">0 Resources (0 KB)</div>
+                </div>
+
+                <!-- Filters & Sorting Controls -->
+                <div class="resource-controls">
+                    <div class="filter-group" id="resourceFilterGroup">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="script">JS</button>
+                        <button class="filter-btn" data-filter="link">CSS</button>
+                        <button class="filter-btn" data-filter="img">Images</button>
+                        <button class="filter-btn" data-filter="font">Fonts</button>
+                        <button class="filter-btn" data-filter="fetch">Fetch/XHR</button>
+                    </div>
+                    <div class="sort-group">
+                        <label for="sortSelect">Sort By:</label>
+                        <select id="sortSelect" class="form-select">
+                            <option value="size-desc">Size (High to Low)</option>
+                            <option value="size-asc">Size (Low to High)</option>
+                            <option value="duration-desc">Duration (Slowest)</option>
+                            <option value="duration-asc">Duration (Fastest)</option>
+                            <option value="name-asc">Name (A-Z)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Size Breakdown Bars -->
+                <div class="resource-visualizer" id="resourceVisualizer">
+                    <!-- Dynamic CSS bar rendered by JS -->
+                </div>
+
+                <!-- Resource Table -->
+                <div class="table-responsive">
+                    <table class="data-table" id="resourceTable">
+                        <thead>
+                            <tr>
+                                <th>Resource Name</th>
+                                <th>Type</th>
+                                <th>Transfer Size</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resourceTableBody">
+                            <tr>
+                                <td colspan="4" class="empty-table">No resource data collected yet. Click <strong>Run Analysis</strong>.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Issues & Recommendations Grid -->
+            <div class="grid-layout bottom-diagnostics-grid">
+                <!-- Detected Issues Card -->
+                <section class="card issues-card">
+                    <h2>Detected Performance Bottlenecks</h2>
+                    <div class="issues-list" id="issuesList">
+                        <div class="empty-state">No analysis run yet.</div>
+                    </div>
+                </section>
+
+                <!-- Recommendations Card -->
+                <section class="card recommendations-card">
+                    <h2>Optimization Recommendations</h2>
+                    <div class="recommendations-list" id="recommendationsList">
+                        <div class="empty-state">No analysis run yet.</div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p>&copy; 2026 WebPulse. Built strictly with Vanilla HTML5, CSS3 &amp; JS.</p>
+        </div>
+    </footer>
+
+    <!-- Application Script Modules -->
+    <script src="js/main.js"></script>
+    <script src="js/performance.js"></script>
+    <script src="js/resources.js"></script>
+    <script src="js/scoring.js"></script>
+    <script src="js/recommendations.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/analyzer.js"></script>
+</body>
+</html>
