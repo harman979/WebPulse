@@ -53,6 +53,18 @@
                     <button class="btn btn-secondary" id="saveReportBtn" disabled>
                         <span class="btn-icon">💾</span> Save Report
                     </button>
+                    <!-- Export group: enabled only after an analysis is run -->
+                    <div class="export-btn-group" id="exportBtnGroup" style="display:none;">
+                        <button class="btn btn-secondary btn-sm" id="exportJSONBtn" title="Download current report as JSON">
+                            <span class="btn-icon">⬇️</span> JSON
+                        </button>
+                        <button class="btn btn-secondary btn-sm" id="exportCSVBtn" title="Download current report as CSV">
+                            <span class="btn-icon">📊</span> CSV
+                        </button>
+                        <button class="btn btn-secondary btn-sm" id="exportPrintBtn" title="Print / Save as PDF">
+                            <span class="btn-icon">🖨️</span> PDF
+                        </button>
+                    </div>
                 </div>
             </section>
 
@@ -209,6 +221,7 @@
     <script src="js/scoring.js"></script>
     <script src="js/recommendations.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/export.js"></script>
     <script src="js/analyzer.js"></script>
 </body>
 </html>

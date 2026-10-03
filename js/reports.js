@@ -12,9 +12,10 @@
 
 /* ─── State ──────────────────────────────────────────────── */
 let state = {
-    allReports:      [],
-    selectedIds:     new Set(),
-    currentQuery:    '',
+    allReports:       [],
+    selectedIds:      new Set(),
+    currentQuery:     '',
+    openModalReportId: null,   // track which report is open in the detail modal
 };
 
 /* ─── DOM References ─────────────────────────────────────── */
@@ -24,6 +25,7 @@ const el = {
     reportCountBadge:   $('reportCountBadge'),
     compareBtn:         $('compareReportsBtn'),
     clearAllBtn:        $('clearAllReportsBtn'),
+    exportAllJSONBtn:   $('exportAllJSONBtn'),
     searchInput:        $('reportSearchInput'),
     reportsTableBody:   $('reportsTableBody'),
     selectAllCheckbox:  $('selectAllCheckbox'),
@@ -35,6 +37,11 @@ const el = {
     modalReportBody:    $('modalReportBody'),
     modalCloseBtn:      $('modalCloseBtn'),
     modalCloseFooter:   $('modalCloseFooterBtn'),
+    // Modal export
+    modalExportJSON:    $('modalExportJSONBtn'),
+    modalExportCSV:     $('modalExportCSVBtn'),
+    modalExportPrint:   $('modalExportPrintBtn'),
+    modalShare:         $('modalShareBtn'),
 
     // Comparison modal
     comparisonModal:    $('comparisonModal'),
@@ -80,11 +87,12 @@ function lcpColorClass(lcpMs) {
 
 /* ─── Toolbar State ──────────────────────────────────────── */
 function updateToolbar() {
-    const count = state.allReports.length;
+    const count    = state.allReports.length;
     const selCount = state.selectedIds.size;
 
     el.reportCountBadge.textContent = `${count} Report${count !== 1 ? 's' : ''}`;
-    el.clearAllBtn.disabled = count === 0;
+    el.clearAllBtn.disabled         = count === 0;
+    if (el.exportAllJSONBtn) el.exportAllJSONBtn.disabled = count === 0;
 
     el.compareBtn.textContent = '';
     el.compareBtn.innerHTML   = `<span class="btn-icon">⚖️</span> Compare Selected (${selCount})`;
@@ -280,11 +288,13 @@ function openDetailModal(reportId) {
 
     el.detailModal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    state.openModalReportId = reportId;
 }
 
 function closeDetailModal() {
     el.detailModal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    state.openModalReportId = null;
 }
 
 /* ─── Comparison Modal ───────────────────────────────────── */
@@ -420,6 +430,23 @@ function wireToolbar() {
         window.WebPulse.storage.clearAllReports();
         refresh();
     });
+
+    // Export All as JSON
+    el.exportAllJSONBtn?.addEventListener('click', () => {
+        const all = window.WebPulse.storage.getAllReports();
+        if (!all.length) return;
+        const exp = window.WebPulse.export;
+        if (!exp) return;
+        const blob    = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
+        const url     = URL.createObjectURL(blob);
+        const a       = document.createElement('a');
+        a.href        = url;
+        a.download    = 'webpulse_all_reports_' + Date.now() + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+    });
 }
 
 /* ─── Modal Close Wiring ─────────────────────────────────── */
@@ -428,6 +455,33 @@ function wireModals() {
     el.modalCloseBtn?.addEventListener('click', closeDetailModal);
     el.modalCloseFooter?.addEventListener('click', closeDetailModal);
     el.modalBackdrop?.addEventListener('click', closeDetailModal);
+
+    // Modal export buttons
+    el.modalExportJSON?.addEventListener('click', () => {
+        const r = state.openModalReportId && window.WebPulse.storage.getReport(state.openModalReportId);
+        if (r) window.WebPulse.export.exportReportJSON(r);
+    });
+    el.modalExportCSV?.addEventListener('click', () => {
+        const r = state.openModalReportId && window.WebPulse.storage.getReport(state.openModalReportId);
+        if (r) window.WebPulse.export.exportReportCSV(r);
+    });
+    el.modalExportPrint?.addEventListener('click', () => {
+        const r = state.openModalReportId && window.WebPulse.storage.getReport(state.openModalReportId);
+        if (r) window.WebPulse.export.exportReportPrint(r);
+    });
+    el.modalShare?.addEventListener('click', () => {
+        const r = state.openModalReportId && window.WebPulse.storage.getReport(state.openModalReportId);
+        if (!r) return;
+        const url = window.WebPulse.export.generateShareURL(r);
+        navigator.clipboard.writeText(url).then(() => {
+            const btn = el.modalShare;
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<span class="btn-icon">✅</span> Copied!';
+            setTimeout(() => { btn.innerHTML = orig; }, 2500);
+        }).catch(() => {
+            window.prompt('Copy this share link:', url);
+        });
+    });
 
     // Comparison modal
     el.comparisonCloseBtn?.addEventListener('click', closeComparisonModal);

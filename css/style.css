@@ -267,6 +267,21 @@ p   { color: var(--text-muted); line-height: 1.7; }
 
 .btn-icon { font-size: 1rem; line-height: 1; }
 
+.btn-sm {
+    padding: 0.35rem 0.75rem;
+    font-size: var(--font-xs);
+    gap: 0.3rem;
+}
+.btn-sm .btn-icon { font-size: 0.85rem; }
+
+/* Export button group (shown after analysis / in toolbar) */
+.export-btn-group {
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
 /* ─── Cards ──────────────────────────────────────────────── */
 .card {
     background: var(--bg-card);

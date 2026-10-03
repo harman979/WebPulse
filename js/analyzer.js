@@ -46,6 +46,11 @@ const el = {
     sortSelect:           $('sortSelect'),
     issuesList:           $('issuesList'),
     recommendationsList:  $('recommendationsList'),
+    // Export
+    exportBtnGroup: $('exportBtnGroup'),
+    exportJSONBtn:  $('exportJSONBtn'),
+    exportCSVBtn:   $('exportCSVBtn'),
+    exportPrintBtn: $('exportPrintBtn'),
 };
 
 /* ─── Status Helpers ─────────────────────────────────────── */
@@ -237,6 +242,9 @@ async function runAnalysis() {
         setStatus('Done', 'done');
         el.saveBtn.disabled = false;
 
+        // Show export group after first analysis
+        if (el.exportBtnGroup) el.exportBtnGroup.style.display = 'flex';
+
     } catch (err) {
         console.error('[WebPulse Analyzer] Analysis failed:', err);
         setStatus('Error', '');
@@ -292,10 +300,54 @@ function wireSortSelect() {
     });
 }
 
+/* ─── Export Buttons (Analyzer page) ────────────────────── */
+function buildLiveReport() {
+    // Construct a report-like object from live state for export (not saved to storage)
+    if (!state.analysisRan) return null;
+    const m = state.lastMetrics;
+    const r = state.lastResources;
+    const s = state.lastScore;
+    return {
+        id:        'live_' + Date.now(),
+        title:     'Live Analysis \u2014 ' + new Date().toLocaleString(),
+        timestamp: Date.now(),
+        score:     s.score,
+        rating:    s.rating,
+        tags:      [],
+        notes:     '',
+        breakdown: s.breakdown,
+        metrics: {
+            cwv:     { lcp: m.cwv.lcp, cls: m.cwv.cls, inp: m.cwv.inp },
+            loading: { fcp: m.loading.fcp, ttfb: m.loading.ttfb, domLoad: m.loading.domLoad, pageLoad: m.loading.pageLoad },
+        },
+        resources: {
+            count:               r.count,
+            grandTotal:          r.grandTotal,
+            grandTotalFormatted: r.grandTotalFormatted,
+            totals:              r.totals,
+        },
+        issues: (state.lastIssues || []).map(function(i) { return { id: i.id, severity: i.severity, iTitle: i.title, desc: i.desc }; }),
+    };
+}
+
+function wireExportButtons() {
+    if (!el.exportJSONBtn) return;
+    el.exportJSONBtn.addEventListener('click', function() {
+        window.WebPulse.export.exportReportJSON(buildLiveReport());
+    });
+    el.exportCSVBtn.addEventListener('click', function() {
+        window.WebPulse.export.exportReportCSV(buildLiveReport());
+    });
+    el.exportPrintBtn.addEventListener('click', function() {
+        window.WebPulse.export.exportReportPrint(buildLiveReport());
+    });
+}
+
 /* ─── Init ───────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
     el.runBtn.addEventListener('click', runAnalysis);
     el.saveBtn.addEventListener('click', handleSaveReport);
     wireFilterButtons();
     wireSortSelect();
+    wireExportButtons();
 });

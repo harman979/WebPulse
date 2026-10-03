@@ -1,6 +1,6 @@
 # WebPulse — Web Performance Analyzer
 
-> **Analyze. Understand. Optimize.**
+> **Analyze. Understand. Optimize. Export. Share.**
 
 WebPulse is a browser-based web performance analyzer built using **HTML, CSS, and Vanilla JavaScript**.
 
@@ -31,3 +31,11 @@ It uses native browser Performance APIs to collect performance information and p
 - View and manage saved reports
 - Compare saved performance reports
 - Responsive interface for different screen sizes
+
+## Day 4 — Export & Share
+
+- **JSON Export** — Download any report (or all reports) as a formatted `.json` file
+- **CSV Export** — Download key metrics as a spreadsheet-ready `.csv` file
+- **PDF / Print Export** — Opens a styled, printable report in a new window with a print dialog
+- **Shareable URL** — Encodes report metrics into a URL that renders a read-only `share.html` card for anyone to view
+- Export is available directly from the **Analyzer** (without saving) and from the **Reports** detail modal

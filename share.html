@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebPulse Shared Performance Report — View a shared web performance snapshot.">
+    <title>Shared Performance Report — WebPulse</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ── Share page overrides ─────────────────────────── */
+        .share-wrap {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 2rem 1rem 4rem;
+            background: var(--bg-dark);
+        }
+        .share-card {
+            width: 100%;
+            max-width: 720px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            animation: fadeSlideUp .5s ease both;
+        }
+        @keyframes fadeSlideUp {
+            from { opacity:0; transform:translateY(16px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+        .share-brand {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-decoration: none;
+        }
+        .share-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: .25rem;
+            word-break: break-word;
+        }
+        .share-meta {
+            font-size: .8rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+        .share-score-row {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .share-score-badge {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .share-score-badge.good   { color: var(--good); }
+        .share-score-badge.needs  { color: var(--needs-improvement); }
+        .share-score-badge.poor   { color: var(--poor); }
+        .share-score-sub { font-size: .85rem; color: var(--text-muted); }
+        .share-section-label {
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            color: var(--text-dimmed);
+            margin-bottom: .75rem;
+            padding-bottom: .4rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .share-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: .75rem;
+            margin-bottom: 1.75rem;
+        }
+        .share-metric-box {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: .9rem 1rem;
+        }
+        .share-metric-label {
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--text-dimmed);
+            margin-bottom: .3rem;
+        }
+        .share-metric-val {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .share-tags { font-size: .8rem; color: var(--text-muted); margin-top: .5rem; }
+        .share-cta {
+            margin-top: 2rem;
+            display: flex;
+            gap: .75rem;
+            flex-wrap: wrap;
+        }
+        .share-error {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+        .share-error h2 { font-size: 1.25rem; margin-bottom: .5rem; color: var(--text-primary); }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <a href="index.html" class="brand-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">WebPulse</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html"    class="nav-link">Home</a>
+                <a href="analyzer.html" class="nav-link">Analyzer</a>
+                <a href="reports.html"  class="nav-link">Reports</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="share-wrap">
+        <div class="share-card" id="shareCard">
+            <!-- Populated by JS -->
+            <div class="share-error">
+                <p>⏳ Loading shared report…</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p>&copy; 2026 WebPulse. Built strictly with Vanilla HTML5, CSS3 &amp; JS.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/export.js"></script>
+    <script>
+    'use strict';
+    (function() {
+        var card = document.getElementById('shareCard');
+        var snap = window.WebPulse.export.loadSharedReport();
+
+        if (!snap) {
+            card.innerHTML = '<div class="share-error"><h2>⚠️ Invalid or missing share link</h2><p>The share link appears to be broken or expired.</p><a href="analyzer.html" class="btn btn-primary" style="margin-top:1.5rem;">Run Your Own Analysis</a></div>';
+            return;
+        }
+
+        function scoreClass(sc) { return sc >= 75 ? 'good' : sc >= 50 ? 'needs' : 'poor'; }
+        function mBox(label, val) {
+            if (!val) return '';
+            return '<div class="share-metric-box"><div class="share-metric-label">' + label + '</div><div class="share-metric-val">' + val + '</div></div>';
+        }
+
+        var tags = snap.tg ? snap.tg.split(',').filter(Boolean).map(function(t){ return '<span class="tag-chip">' + t.trim() + '</span>'; }).join('') : '';
+
+        card.innerHTML =
+            '<a href="index.html" class="share-brand">⚡ WebPulse &nbsp;<span style="font-weight:400;font-size:.85rem;color:var(--text-muted)">Shared Report</span></a>' +
+            '<div class="share-title">' + snap.t + '</div>' +
+            '<div class="share-meta">Captured: ' + new Date(snap.ts).toLocaleString() + '</div>' +
+
+            '<div class="share-score-row">' +
+            '<div class="share-score-badge ' + scoreClass(snap.sc) + '">' + snap.sc + '</div>' +
+            '<div><div style="font-size:1.1rem;font-weight:700;color:var(--text-main)">' + snap.rt + '</div><div class="share-score-sub">WebPulse Score / 100</div></div>' +
+            '</div>' +
+
+            '<div class="share-section-label">Core Web Vitals</div>' +
+            '<div class="share-metrics-grid">' +
+            mBox('LCP', snap.lcp) + mBox('CLS', snap.cls) + mBox('INP', snap.inp) +
+            '</div>' +
+
+            '<div class="share-section-label">Loading Performance</div>' +
+            '<div class="share-metrics-grid">' +
+            mBox('FCP', snap.fcp) + mBox('TTFB', snap.ttfb) + mBox('Page Load', snap.pl) +
+            '</div>' +
+
+            '<div class="share-section-label">Resources</div>' +
+            '<div class="share-metrics-grid">' +
+            mBox('Count', snap.rc != null ? String(snap.rc) : null) + mBox('Total Size', snap.rs) +
+            '</div>' +
+
+            (tags ? '<div class="share-tags"><strong>Tags:</strong> ' + tags + '</div>' : '') +
+
+            '<div class="share-cta">' +
+            '<a href="analyzer.html" class="btn btn-primary"><span class="btn-icon">⚡</span> Analyze My Page</a>' +
+            '<a href="reports.html"  class="btn btn-secondary"><span class="btn-icon">📁</span> View My Reports</a>' +
+            '</div>';
+
+        // Update page title dynamically
+        document.title = snap.t + ' — WebPulse Shared Report';
+    })();
+    </script>
+</body>
+</html>

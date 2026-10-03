@@ -42,6 +42,9 @@
                     <button class="btn btn-secondary" id="compareReportsBtn" disabled>
                         <span class="btn-icon">⚖️</span> Compare Selected (0)
                     </button>
+                    <button class="btn btn-secondary" id="exportAllJSONBtn" disabled title="Export all reports as JSON">
+                        <span class="btn-icon">📦</span> Export All (JSON)
+                    </button>
                     <button class="btn btn-danger" id="clearAllReportsBtn" disabled>
                         <span class="btn-icon">🗑️</span> Clear All History
                     </button>
@@ -99,6 +102,20 @@
                 <!-- Dynamic detail elements populated by JS -->
             </div>
             <div class="modal-footer">
+                <div class="modal-footer-export" id="modalExportActions">
+                    <button class="btn btn-secondary btn-sm" id="modalExportJSONBtn" title="Download as JSON">
+                        <span class="btn-icon">⬇️</span> JSON
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="modalExportCSVBtn" title="Download as CSV">
+                        <span class="btn-icon">📊</span> CSV
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="modalExportPrintBtn" title="Print / Save as PDF">
+                        <span class="btn-icon">🖨️</span> PDF
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="modalShareBtn" title="Copy shareable link">
+                        <span class="btn-icon">🔗</span> Share Link
+                    </button>
+                </div>
                 <button class="btn btn-secondary" id="modalCloseFooterBtn">Close</button>
             </div>
         </div>
@@ -131,6 +148,7 @@
     <!-- Application Script Modules -->
     <script src="js/main.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/export.js"></script>
     <script src="js/reports.js"></script>
 </body>
 </html>
