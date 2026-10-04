@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebPulse Settings — Customize your theme, time units, metric thresholds, and scoring weights.">
+    <title>Settings — WebPulse</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/settings.css">
+</head>
+<body>
+    <!-- Main Header & Navigation -->
+    <header class="app-header">
+        <div class="header-container">
+            <a href="index.html" class="brand-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">WebPulse</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html"    class="nav-link">Home</a>
+                <a href="analyzer.html" class="nav-link">Analyzer</a>
+                <a href="reports.html"  class="nav-link">Reports</a>
+                <a href="settings.html" class="nav-link active">Settings</a>
+            </nav>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+        </div>
+    </header>
+
+    <main id="mainContent" class="settings-main">
+        <div class="settings-container">
+
+            <!-- Page Header -->
+            <div class="settings-page-header animate-slide-up">
+                <h1>⚙️ Settings & Preferences</h1>
+                <p>Customize WebPulse's appearance, units, and how performance scores are calculated.</p>
+            </div>
+
+            <!-- ── Section 1: Appearance ── -->
+            <section class="settings-section animate-slide-up" style="animation-delay:.05s">
+                <div class="settings-section-header">
+                    <div class="settings-section-icon">🎨</div>
+                    <div>
+                        <div class="settings-section-title">Appearance</div>
+                        <div class="settings-section-subtitle">Theme and visual preferences</div>
+                    </div>
+                </div>
+
+                <!-- Theme -->
+                <div class="setting-row">
+                    <div class="setting-label-group">
+                        <div class="setting-label">Color Theme</div>
+                        <div class="setting-hint">Choose between Dark, Light, or follow your OS preference.</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="theme-picker" id="themePicker" role="radiogroup" aria-label="Color theme">
+                            <label class="theme-option">
+                                <input type="radio" name="theme" value="dark" id="themeDark">
+                                <div class="theme-card">
+                                    <span class="theme-icon">🌙</span>
+                                    <span class="theme-label">Dark</span>
+                                </div>
+                            </label>
+                            <label class="theme-option">
+                                <input type="radio" name="theme" value="light" id="themeLight">
+                                <div class="theme-card">
+                                    <span class="theme-icon">☀️</span>
+                                    <span class="theme-label">Light</span>
+                                </div>
+                            </label>
+                            <label class="theme-option">
+                                <input type="radio" name="theme" value="system" id="themeSystem">
+                                <div class="theme-card">
+                                    <span class="theme-icon">💻</span>
+                                    <span class="theme-label">System</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Animations -->
+                <div class="setting-row">
+                    <div class="setting-label-group">
+                        <div class="setting-label">Animations & Transitions</div>
+                        <div class="setting-hint">Disable to reduce motion for accessibility or performance.</div>
+                    </div>
+                    <div class="setting-control">
+                        <label class="toggle-switch" aria-label="Enable animations">
+                            <input type="checkbox" id="animationsToggle">
+                            <span class="toggle-track"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── Section 2: Display Units ── -->
+            <section class="settings-section animate-slide-up" style="animation-delay:.1s">
+                <div class="settings-section-header">
+                    <div class="settings-section-icon">⏱️</div>
+                    <div>
+                        <div class="settings-section-title">Display Units</div>
+                        <div class="settings-section-subtitle">How timing values are shown throughout the app</div>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label-group">
+                        <div class="setting-label">Time Unit</div>
+                        <div class="setting-hint">
+                            <strong>Auto</strong> — displays values ≥ 1000ms as seconds (e.g. 2.5s).
+                            <strong>Always ms</strong> — forces milliseconds for all values.
+                        </div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="unit-selector" role="group" aria-label="Time unit">
+                            <button class="unit-btn" id="unitAuto"  data-unit="auto">Auto</button>
+                            <button class="unit-btn" id="unitMs"    data-unit="ms">Always ms</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── Section 3: Metric Thresholds ── -->
+            <section class="settings-section animate-slide-up" style="animation-delay:.15s">
+                <div class="settings-section-header">
+                    <div class="settings-section-icon">📏</div>
+                    <div>
+                        <div class="settings-section-title">Metric Thresholds</div>
+                        <div class="settings-section-subtitle">
+                            Set custom Good / Needs Improvement boundaries for each metric.
+                            These thresholds affect the status color and the WebPulse Score.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Threshold rows — rendered by JS -->
+                <div id="thresholdsGrid"></div>
+            </section>
+
+            <!-- ── Section 4: Scoring Weights ── -->
+            <section class="settings-section animate-slide-up" style="animation-delay:.2s">
+                <div class="settings-section-header">
+                    <div class="settings-section-icon">⚖️</div>
+                    <div>
+                        <div class="settings-section-title">Scoring Weights</div>
+                        <div class="settings-section-subtitle">
+                            Adjust how much each category contributes to the overall WebPulse Score.
+                            Weights must total exactly 100%.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weight sliders — rendered by JS -->
+                <div id="weightsGrid"></div>
+                <div class="weight-total-row">
+                    <span>Total</span>
+                    <span class="weight-total-value" id="weightTotal">100%</span>
+                </div>
+            </section>
+
+            <!-- ── Actions Bar ── -->
+            <div class="settings-actions animate-slide-up" style="animation-delay:.25s">
+                <div class="settings-actions-left">
+                    <button class="btn btn-primary" id="saveSettingsBtn">
+                        <span class="btn-icon">💾</span> Save Settings
+                    </button>
+                    <button class="btn btn-secondary" id="resetSettingsBtn">
+                        <span class="btn-icon">↩️</span> Reset to Defaults
+                    </button>
+                </div>
+                <a href="analyzer.html" class="btn btn-secondary">
+                    <span class="btn-icon">⚡</span> Go to Analyzer
+                </a>
+            </div>
+
+        </div><!-- /.settings-container -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p>&copy; 2026 WebPulse. Built strictly with Vanilla HTML5, CSS3 &amp; JS.</p>
+            <p><a href="LICENSE" target="_blank">MIT License</a> | <a href="README.md" target="_blank">Documentation</a></p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/settings.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/settings-page.js"></script>
+</body>
+</html>

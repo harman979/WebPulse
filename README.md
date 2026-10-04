@@ -39,3 +39,12 @@ It uses native browser Performance APIs to collect performance information and p
 - **PDF / Print Export** — Opens a styled, printable report in a new window with a print dialog
 - **Shareable URL** — Encodes report metrics into a URL that renders a read-only `share.html` card for anyone to view
 - Export is available directly from the **Analyzer** (without saving) and from the **Reports** detail modal
+
+## Day 5 — Settings & Preferences
+
+- **Color Theme** — Dark, Light, or System (follows OS preference), with a persistent quick-toggle ☀️/🌙 button in the header on every page
+- **Animations** — Enable or disable all transitions and animations app-wide (accessibility & performance)
+- **Time Unit** — Choose "Auto" (values ≥ 1000ms shown as seconds) or "Always ms" — applied to all metric displays
+- **Metric Thresholds** — Customize the Good / Needs-Improvement boundaries for LCP, CLS, INP, FCP, TTFB, DOM Load, and Page Load. Thresholds affect both status badge colors and the WebPulse Score
+- **Scoring Weights** — Slider-based controls to redistribute the 40/25/20/15% category weights across CWV, Loading, Resources, and Issues. Weights must total 100%
+- All preferences persist via `localStorage` and apply immediately on every page without a reload

@@ -18,10 +18,19 @@ const THRESHOLDS = {
 
 /**
  * Classify a metric value against thresholds.
+ * Uses user-configured thresholds from Settings when available.
  * @returns {'good'|'needs-improvement'|'poor'}
  */
 function classify(metric, value) {
-    const t = THRESHOLDS[metric];
+    // Try to get user threshold from settings
+    const settingsKey = { LCP: 'lcp', CLS: 'cls', INP: 'inp', FCP: 'fcp', TTFB: 'ttfb' }[metric];
+    let t;
+    if (settingsKey && window.WebPulse && window.WebPulse.settings) {
+        const st = window.WebPulse.settings.getThreshold(settingsKey);
+        t = { good: st.good, poor: st.needs };
+    } else {
+        t = THRESHOLDS[metric];
+    }
     if (!t) return 'good';
     if (value <= t.good) return 'good';
     if (value <= t.poor) return 'needs-improvement';
@@ -30,11 +39,16 @@ function classify(metric, value) {
 
 /**
  * Format milliseconds to a human-readable string.
+ * Uses user's timeUnit preference from Settings when available.
  * @param {number} ms
  * @returns {string}
  */
 function formatMs(ms) {
     if (ms === null || ms === undefined || isNaN(ms)) return 'N/A';
+    // Use settings formatter if available
+    if (window.WebPulse && window.WebPulse.settings) {
+        return window.WebPulse.settings.formatTime(ms);
+    }
     if (ms >= 1000) return (ms / 1000).toFixed(2) + 's';
     return Math.round(ms) + 'ms';
 }
