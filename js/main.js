@@ -39,24 +39,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-/* ─── Inject Settings Nav Link ───────────────────────────── */
+/* ─── Inject Trends + Settings Nav Links ─────────────────── */
 function injectSettingsNav() {
     const mainNav = document.querySelector('.main-nav');
     if (!mainNav) return;
-    // Avoid duplicate injection
-    if (mainNav.querySelector('a[href="settings.html"]')) return;
 
-    const settingsLink = document.createElement('a');
-    settingsLink.href      = 'settings.html';
-    settingsLink.className = 'nav-link';
-    settingsLink.textContent = 'Settings';
-
-    // Mark active if we're on the settings page
-    if (location.pathname.endsWith('settings.html')) {
-        settingsLink.classList.add('active');
+    // Inject Trends link (if not already present)
+    if (!mainNav.querySelector('a[href="trends.html"]')) {
+        const trendsLink = document.createElement('a');
+        trendsLink.href      = 'trends.html';
+        trendsLink.className = 'nav-link';
+        trendsLink.textContent = 'Trends';
+        if (location.pathname.endsWith('trends.html')) {
+            trendsLink.classList.add('active');
+        }
+        mainNav.appendChild(trendsLink);
     }
 
-    mainNav.appendChild(settingsLink);
+    // Inject Settings link (if not already present)
+    if (!mainNav.querySelector('a[href="settings.html"]')) {
+        const settingsLink = document.createElement('a');
+        settingsLink.href      = 'settings.html';
+        settingsLink.className = 'nav-link';
+        settingsLink.textContent = 'Settings';
+        if (location.pathname.endsWith('settings.html')) {
+            settingsLink.classList.add('active');
+        }
+        mainNav.appendChild(settingsLink);
+    }
 }
 
 /* ─── Theme Toggle Button ────────────────────────────────── */

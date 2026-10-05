@@ -48,3 +48,15 @@ It uses native browser Performance APIs to collect performance information and p
 - **Metric Thresholds** — Customize the Good / Needs-Improvement boundaries for LCP, CLS, INP, FCP, TTFB, DOM Load, and Page Load. Thresholds affect both status badge colors and the WebPulse Score
 - **Scoring Weights** — Slider-based controls to redistribute the 40/25/20/15% category weights across CWV, Loading, Resources, and Issues. Weights must total 100%
 - All preferences persist via `localStorage` and apply immediately on every page without a reload
+
+## Day 6 — Historical Trends & Charts
+
+- **Score Over Time** — Full-width line chart tracking the WebPulse Score across all saved reports with Good/Needs-Work threshold overlays
+- **Core Web Vitals Trend** — Multi-series line chart showing LCP, FCP, and TTFB history side-by-side
+- **Metric Selector Chart** — Single-metric line chart for LCP, CLS, INP, FCP, TTFB, or Page Load; switch metrics via tab buttons with threshold lines
+- **Page Size Bar Chart** — Bar chart showing total resource transfer size across reports
+- **Metric Sparklines** — 8 compact mini-charts (Score, LCP, CLS, INP, FCP, TTFB, Page Load, Page Size) with latest value and % change vs. first report
+- **Summary Stat Cards** — Total reports, Best/Worst/Avg score, and a trend arrow with point delta
+- **Range Filter** — Show Last 10, Last 20, or All reports; charts and stats update live
+- **Canvas Chart Engine** — Pure vanilla JS / Canvas 2D drawing engine (no external chart libraries), with gradient fills, threshold overlays, and hover tooltips
+- **Trends nav link** — Automatically injected into every page's header by `main.js`

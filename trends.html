@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebPulse Historical Trends — Visualise your performance metrics over time with interactive charts.">
+    <title>Historical Trends — WebPulse Performance Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/trends.css">
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <header class="app-header">
+        <div class="header-container">
+            <a href="index.html" class="brand-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">WebPulse</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html"    class="nav-link">Home</a>
+                <a href="analyzer.html" class="nav-link">Analyzer</a>
+                <a href="reports.html"  class="nav-link">Reports</a>
+                <a href="trends.html"   class="nav-link active">Trends</a>
+            </nav>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+        </div>
+    </header>
+
+    <main id="mainContent" class="trends-main">
+        <div class="trends-container">
+
+            <!-- Page Header -->
+            <section class="trends-header">
+                <div class="trends-header-left">
+                    <h1>📈 Historical Trends</h1>
+                    <p>Visualize performance changes across all saved reports</p>
+                </div>
+                <div class="trends-header-actions">
+                    <!-- Range Filter -->
+                    <div class="range-filter" role="group" aria-label="Report range filter">
+                        <button class="range-btn" data-range="10">Last 10</button>
+                        <button class="range-btn" data-range="20">Last 20</button>
+                        <button class="range-btn active" data-range="all">All</button>
+                    </div>
+                    <a href="reports.html" class="btn btn-secondary">
+                        <span class="btn-icon">📁</span> View Reports
+                    </a>
+                </div>
+            </section>
+
+            <!-- Dynamic content (stats + charts OR empty state) -->
+            <div id="trendsContent">
+
+                <!-- ── Summary Stat Cards ── -->
+                <div class="trends-stats-grid" id="statCards">
+                    <div class="stat-card stat-total">
+                        <div class="stat-label">Reports Analyzed</div>
+                        <div class="stat-value" id="statTotal">—</div>
+                        <div class="stat-sub">in selected range</div>
+                    </div>
+                    <div class="stat-card stat-best">
+                        <div class="stat-label">Best Score</div>
+                        <div class="stat-value" id="statBest">—</div>
+                        <div class="stat-sub">highest recorded</div>
+                    </div>
+                    <div class="stat-card stat-avg">
+                        <div class="stat-label">Average Score</div>
+                        <div class="stat-value" id="statAvg">—</div>
+                        <div class="stat-sub">across range</div>
+                    </div>
+                    <div class="stat-card stat-worst">
+                        <div class="stat-label">Worst Score</div>
+                        <div class="stat-value" id="statWorst">—</div>
+                        <div class="stat-sub">lowest recorded</div>
+                    </div>
+                    <div class="stat-card stat-trend">
+                        <div class="stat-label">Score Trend</div>
+                        <div class="stat-value">
+                            <span class="stat-trend-arrow flat" id="statTrendArrow">→</span>
+                        </div>
+                        <div class="stat-sub" id="statTrendSub">no change</div>
+                    </div>
+                </div>
+
+                <!-- ── Score Over Time (Full Width) ── -->
+                <section class="chart-section">
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <div>
+                                <div class="chart-card-title">⚡ WebPulse Score Over Time</div>
+                                <div class="chart-card-subtitle">Trend of the overall performance score across saved reports</div>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrap chart-tall">
+                            <canvas id="scoreChart" aria-label="WebPulse Score trend line chart"></canvas>
+                        </div>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="legend-dot" style="background:#3b82f6"></span>
+                                WebPulse Score
+                            </div>
+                            <div class="legend-threshold">
+                                <span class="legend-dashed good"></span>
+                                Good threshold (75)
+                            </div>
+                            <div class="legend-threshold">
+                                <span class="legend-dashed needs"></span>
+                                Needs Work threshold (50)
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ── Two Charts Side-by-Side ── -->
+                <div class="charts-grid">
+
+                    <!-- Core Web Vitals -->
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <div>
+                                <div class="chart-card-title">🎯 Core Web Vitals</div>
+                                <div class="chart-card-subtitle">LCP, FCP & TTFB over time (ms)</div>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="cwvChart" aria-label="Core Web Vitals line chart"></canvas>
+                        </div>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="legend-line" style="background:#8b5cf6"></span>LCP
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-line" style="background:#06b6d4"></span>FCP
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-line" style="background:#f97316"></span>TTFB
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Single Metric (Loading) with Tab Selector -->
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <div>
+                                <div class="chart-card-title" id="loadingChartTitle">Page Load Over Time</div>
+                                <div class="chart-card-subtitle">Select a metric to visualize</div>
+                            </div>
+                        </div>
+                        <!-- Metric Selector Tabs -->
+                        <div class="metric-tabs-section">
+                            <span class="metric-tabs-label">Metric:</span>
+                            <div class="metric-tabs" role="tablist" aria-label="Select metric to chart">
+                                <button class="metric-tab-btn" data-metric="lcp"      role="tab">LCP</button>
+                                <button class="metric-tab-btn" data-metric="cls"      role="tab">CLS</button>
+                                <button class="metric-tab-btn" data-metric="inp"      role="tab">INP</button>
+                                <button class="metric-tab-btn" data-metric="fcp"      role="tab">FCP</button>
+                                <button class="metric-tab-btn" data-metric="ttfb"     role="tab">TTFB</button>
+                                <button class="metric-tab-btn active" data-metric="pageLoad" role="tab">Page Load</button>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="loadingChart" aria-label="Single metric trend line chart"></canvas>
+                        </div>
+                    </div>
+
+                </div><!-- /.charts-grid -->
+
+                <!-- ── Resource Bar Chart (Full Width) ── -->
+                <section class="chart-section">
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <div>
+                                <div class="chart-card-title">📦 Page Size Over Time</div>
+                                <div class="chart-card-subtitle">Total transfer size of all resources per report</div>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="resourceChart" aria-label="Resource page size bar chart"></canvas>
+                        </div>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="legend-dot" style="background:#34d399"></span>
+                                Total Page Size
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ── Sparklines Row ── -->
+                <section class="sparklines-section">
+                    <h2>📊 Metric Snapshots</h2>
+                    <div class="sparklines-grid" id="sparklinesGrid">
+                        <!-- Populated by trends.js -->
+                    </div>
+                </section>
+
+            </div><!-- /#trendsContent -->
+
+        </div><!-- /.trends-container -->
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p>&copy; 2026 WebPulse. Built strictly with Vanilla HTML5, CSS3 &amp; JS.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/settings.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/trends.js"></script>
+
+</body>
+</html>
