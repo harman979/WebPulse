@@ -308,15 +308,15 @@ function openComparisonModal() {
     if (!r1 || !r2) return;
 
     const rows = [
-        { label: 'WebPulse Score',    v1: r1.score,                      v2: r2.score,                      unit: '',   lowerBetter: false },
-        { label: 'LCP',               v1: r1.metrics?.cwv?.lcp?.value,   v2: r2.metrics?.cwv?.lcp?.value,   unit: 'ms', lowerBetter: true  },
-        { label: 'CLS',               v1: r1.metrics?.cwv?.cls?.value,   v2: r2.metrics?.cwv?.cls?.value,   unit: '',   lowerBetter: true  },
-        { label: 'INP',               v1: r1.metrics?.cwv?.inp?.value,   v2: r2.metrics?.cwv?.inp?.value,   unit: 'ms', lowerBetter: true  },
-        { label: 'FCP',               v1: r1.metrics?.loading?.fcp?.value,  v2: r2.metrics?.loading?.fcp?.value,  unit: 'ms', lowerBetter: true  },
-        { label: 'TTFB',              v1: r1.metrics?.loading?.ttfb?.value, v2: r2.metrics?.loading?.ttfb?.value, unit: 'ms', lowerBetter: true  },
-        { label: 'Page Load',         v1: r1.metrics?.loading?.pageLoad?.value, v2: r2.metrics?.loading?.pageLoad?.value, unit: 'ms', lowerBetter: true },
-        { label: 'Resources',         v1: r1.resources?.count,           v2: r2.resources?.count,           unit: '',   lowerBetter: true  },
-        { label: 'Total Size',        v1: r1.resources?.grandTotal,      v2: r2.resources?.grandTotal,      unit: 'B',  lowerBetter: true, formatFn: window.WebPulse.resources?.formatBytes },
+        { label: 'WebPulse Score',  emoji: '⚡', v1: r1.score,                                       v2: r2.score,                                       unit: '',   lowerBetter: false },
+        { label: 'LCP',             emoji: '🖼️', v1: r1.metrics?.cwv?.lcp?.value,                    v2: r2.metrics?.cwv?.lcp?.value,                    unit: 'ms', lowerBetter: true  },
+        { label: 'CLS',             emoji: '📐', v1: r1.metrics?.cwv?.cls?.value,                    v2: r2.metrics?.cwv?.cls?.value,                    unit: '',   lowerBetter: true  },
+        { label: 'INP',             emoji: '👆', v1: r1.metrics?.cwv?.inp?.value,                    v2: r2.metrics?.cwv?.inp?.value,                    unit: 'ms', lowerBetter: true  },
+        { label: 'FCP',             emoji: '🎨', v1: r1.metrics?.loading?.fcp?.value,                v2: r2.metrics?.loading?.fcp?.value,                unit: 'ms', lowerBetter: true  },
+        { label: 'TTFB',            emoji: '🌐', v1: r1.metrics?.loading?.ttfb?.value,               v2: r2.metrics?.loading?.ttfb?.value,               unit: 'ms', lowerBetter: true  },
+        { label: 'Page Load',       emoji: '⏱️', v1: r1.metrics?.loading?.pageLoad?.value,           v2: r2.metrics?.loading?.pageLoad?.value,           unit: 'ms', lowerBetter: true  },
+        { label: 'Resources',       emoji: '📦', v1: r1.resources?.count,                            v2: r2.resources?.count,                            unit: '',   lowerBetter: true  },
+        { label: 'Total Size',      emoji: '💾', v1: r1.resources?.grandTotal,                       v2: r2.resources?.grandTotal,                       unit: 'B',  lowerBetter: true, formatFn: window.WebPulse.resources?.formatBytes },
     ];
 
     function fmt(val, unit, fn) {
@@ -326,36 +326,66 @@ function openComparisonModal() {
         return typeof val === 'number' ? (Number.isInteger(val) ? val : val.toFixed(3)) : val;
     }
 
-    function deltaHtml(v1, v2, lowerBetter) {
-        if (v1 === null || v2 === null || isNaN(v1) || isNaN(v2)) return '<span class="delta-same">—</span>';
-        if (v1 === v2) return '<span class="delta-same">→ Same</span>';
-        const diff = v1 - v2;
-        const pct = Math.abs((diff / (v2 || 1)) * 100).toFixed(1);
-        // Is A better than B?
-        const aBetter = lowerBetter ? diff < 0 : diff > 0;
-        const arrow   = aBetter ? '↑ Better' : '↓ Worse';
-        const cls     = aBetter ? 'delta-better' : 'delta-worse';
-        return `<span class="${cls}">${arrow} (${pct}%)</span>`;
+    // Returns delta badge HTML for Report B column (how B compares to A)
+    function deltaBadge(v1, v2, lowerBetter) {
+        if (v1 == null || v2 == null || isNaN(v1) || isNaN(v2)) return '<span class="delta-badge delta-neutral">N/A</span>';
+        if (v1 === v2) return '<span class="delta-badge delta-neutral">Same</span>';
+        const diff     = v2 - v1;            // positive = B went up, negative = B went down
+        const absDiff  = Math.abs(diff);
+        const pct      = Math.abs((diff / (v1 || 1)) * 100).toFixed(1);
+        // "Better" for B: lowerBetter → diff < 0 (B lower), else diff > 0 (B higher)
+        const bBetter  = lowerBetter ? diff < 0 : diff > 0;
+        const arrow    = diff > 0 ? '▲' : '▼';
+        const cls      = bBetter ? 'delta-badge delta-better' : 'delta-badge delta-worse';
+        return `<span class="${cls}">${arrow} ${pct}%</span>`;
     }
 
+    // Determine winner by score
+    const winnerBanner = (() => {
+        const s1 = r1.score ?? 0, s2 = r2.score ?? 0;
+        if (s1 === s2) return `<div class="comparison-winner tie">🤝 Tie — Both scored ${s1}/100</div>`;
+        const winner = s1 > s2 ? r1 : r2;
+        const margin = Math.abs(s1 - s2);
+        const cls    = s1 > s2 ? 'a' : 'b';
+        return `<div class="comparison-winner winner-${cls}">🏆 <strong>${escHtml(winner.title)}</strong> wins by ${margin} points</div>`;
+    })();
+
     el.comparisonBody.innerHTML = `
-        <div class="comparison-grid">
-            <div class="comparison-col">
-                <div class="comparison-col-label">Report A: ${escHtml(r1.title)}</div>
-                ${rows.map(row => `
-                    <div class="comparison-metric-row">
-                        <span class="comparison-metric-key">${escHtml(row.label)}</span>
-                        <span class="comparison-metric-val">${escHtml(String(fmt(row.v1, row.unit, row.formatFn)))}</span>
-                    </div>`).join('')}
-            </div>
-            <div class="comparison-col">
-                <div class="comparison-col-label">Report B: ${escHtml(r2.title)}</div>
-                ${rows.map(row => `
-                    <div class="comparison-metric-row">
-                        <span class="comparison-metric-key">${deltaHtml(row.v1, row.v2, row.lowerBetter)}</span>
-                        <span class="comparison-metric-val">${escHtml(String(fmt(row.v2, row.unit, row.formatFn)))}</span>
-                    </div>`).join('')}
-            </div>
+        ${winnerBanner}
+        <div class="comparison-table-wrap">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th class="cmp-th-metric">Metric</th>
+                        <th class="cmp-th-val">
+                            <div class="cmp-report-label cmp-label-a">A</div>
+                            <div class="cmp-report-name">${escHtml(r1.title)}</div>
+                            <div class="cmp-report-date">${new Date(r1.timestamp).toLocaleDateString()}</div>
+                        </th>
+                        <th class="cmp-th-val">
+                            <div class="cmp-report-label cmp-label-b">B</div>
+                            <div class="cmp-report-name">${escHtml(r2.title)}</div>
+                            <div class="cmp-report-date">${new Date(r2.timestamp).toLocaleDateString()}</div>
+                        </th>
+                        <th class="cmp-th-delta">Change (A→B)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows.map((row, i) => {
+                        const val1 = fmt(row.v1, row.unit, row.formatFn);
+                        const val2 = fmt(row.v2, row.unit, row.formatFn);
+                        const delta = deltaBadge(row.v1, row.v2, row.lowerBetter);
+                        const rowClass = i % 2 === 0 ? 'cmp-row-even' : '';
+                        return `
+                    <tr class="cmp-row ${rowClass}">
+                        <td class="cmp-metric-name">${escHtml(row.emoji)} ${escHtml(row.label)}</td>
+                        <td class="cmp-metric-val">${escHtml(String(val1))}</td>
+                        <td class="cmp-metric-val">${escHtml(String(val2))}</td>
+                        <td class="cmp-metric-delta">${delta}</td>
+                    </tr>`;
+                    }).join('')}
+                </tbody>
+            </table>
         </div>`;
 
     el.comparisonModal.setAttribute('aria-hidden', 'false');

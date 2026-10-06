@@ -728,3 +728,301 @@ p   { color: var(--text-muted); line-height: 1.7; }
     .brand-logo { font-size: var(--font-base); }
     .card { padding: var(--space-sm) var(--space-md); }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Day 7 Additions
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── Button Ripple ──────────────────────────────────────── */
+.btn { position: relative; overflow: hidden; }
+
+@keyframes rippleExpand {
+    to { transform: scale(4); opacity: 0; }
+}
+
+.btn-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(0);
+    pointer-events: none;
+    animation: rippleExpand 0.55s ease-out forwards;
+}
+
+/* ─── Scroll Reveal ──────────────────────────────────────── */
+.scroll-hidden {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.scroll-revealed {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* ─── Keyboard Shortcuts Overlay ────────────────────────── */
+.shortcuts-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+.shortcuts-overlay.shortcuts-open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.shortcuts-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    width: min(560px, 92vw);
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255,255,255,0.04);
+    overflow: hidden;
+    transform: translateY(12px) scale(0.97);
+    transition: transform 0.25s ease;
+}
+.shortcuts-overlay.shortcuts-open .shortcuts-panel {
+    transform: translateY(0) scale(1);
+}
+
+.shortcuts-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg) var(--space-xl);
+    border-bottom: 1px solid var(--border-color);
+}
+.shortcuts-header h2 {
+    font-size: var(--font-lg);
+    font-weight: 700;
+    color: var(--text-bright);
+    margin: 0;
+}
+.shortcuts-close {
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.3rem 0.55rem;
+    transition: all var(--transition-base);
+}
+.shortcuts-close:hover { background: var(--bg-card-hover); color: var(--text-bright); }
+
+.shortcuts-body {
+    padding: var(--space-lg) var(--space-xl);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+}
+
+.shortcuts-group-title {
+    font-size: var(--font-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dimmed);
+    margin-bottom: var(--space-sm);
+}
+
+.shortcut-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+    padding: 0.3rem 0;
+}
+.shortcut-row span { margin-left: auto; text-align: right; }
+.shortcut-row kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-bottom-width: 2px;
+    border-radius: var(--radius-xs);
+    color: var(--text-main);
+    font-family: var(--font-family);
+    font-size: var(--font-xs);
+    font-weight: 600;
+    min-width: 28px;
+    padding: 0.15rem 0.45rem;
+    white-space: nowrap;
+}
+
+/* Shortcuts hint button in header */
+.shortcuts-hint-btn {
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-dimmed);
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: var(--font-sm);
+    font-weight: 700;
+    line-height: 1;
+    padding: 0.3rem 0.6rem;
+    transition: all var(--transition-base);
+}
+.shortcuts-hint-btn:hover {
+    background: var(--bg-card);
+    border-color: #475569;
+    color: var(--text-main);
+}
+
+@media (max-width: 480px) {
+    .shortcuts-body { grid-template-columns: 1fr; }
+}
+
+/* ─── Comparison Table (Day 7 upgrade) ──────────────────── */
+.comparison-table-wrap {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    margin-top: var(--space-md);
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-sm);
+}
+
+.comparison-table thead {
+    background: var(--bg-dark);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.comparison-table th {
+    padding: var(--space-md) var(--space-lg);
+    text-align: center;
+    color: var(--text-dimmed);
+    font-size: var(--font-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+.cmp-th-metric { text-align: left; }
+
+.cmp-report-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: var(--font-xs);
+    font-weight: 800;
+    margin: 0 auto var(--space-xs);
+}
+.cmp-label-a { background: rgba(59, 130, 246, 0.2); color: var(--primary); border: 1px solid rgba(59,130,246,0.4); }
+.cmp-label-b { background: rgba(139, 92, 246, 0.2); color: #a78bfa;       border: 1px solid rgba(139,92,246,0.4);  }
+
+.cmp-report-name {
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: var(--font-sm);
+    margin-bottom: 2px;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.cmp-report-date { font-size: var(--font-xs); color: var(--text-dimmed); }
+
+.cmp-row td { padding: var(--space-sm) var(--space-lg); border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
+.cmp-row:last-child td { border-bottom: none; }
+.cmp-row-even { background: rgba(30, 41, 59, 0.4); }
+.cmp-row:hover td { background: rgba(59, 130, 246, 0.05); }
+
+.cmp-metric-name { color: var(--text-muted); font-weight: 500; white-space: nowrap; }
+.cmp-metric-val  { text-align: center; font-weight: 600; color: var(--text-bright); font-variant-numeric: tabular-nums; }
+.cmp-metric-delta { text-align: center; }
+
+/* Delta badges */
+.delta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: var(--font-xs);
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+}
+.delta-better { background: var(--good-bg); color: var(--good); border: 1px solid rgba(34,197,94,0.3); }
+.delta-worse  { background: var(--poor-bg); color: var(--poor); border: 1px solid rgba(239,68,68,0.3); }
+.delta-neutral { background: var(--bg-dark); color: var(--text-dimmed); border: 1px solid var(--border-subtle); }
+
+/* Winner banner */
+.comparison-winner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+}
+.comparison-winner.winner-a,
+.comparison-winner.winner-b { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.25); color: var(--info); }
+.comparison-winner.tie { background: var(--good-bg); border: 1px solid rgba(34,197,94,0.3); color: var(--good); }
+.comparison-winner strong { color: inherit; }
+
+/* ─── Hero Stat Counter Strip ────────────────────────────── */
+.hero-stats-strip {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xl);
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: var(--space-sm);
+    animation: heroFadeUp 0.6s ease both 0.4s;
+}
+
+.hero-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.hero-stat-value {
+    font-size: var(--font-xl);
+    font-weight: 800;
+    color: var(--text-bright);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.hero-stat-label {
+    font-size: var(--font-xs);
+    color: var(--text-dimmed);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 500;
+}
+
+.hero-stats-divider {
+    width: 1px;
+    height: 36px;
+    background: var(--border-color);
+    flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+    .hero-stat-item:nth-child(n+4) { display: none; }
+    .hero-stats-divider:nth-child(n+4) { display: none; }
+}

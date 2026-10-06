@@ -41,8 +41,30 @@
                     Core Web Vitals, resource profiling, and rule-based bottleneck diagnostics.
                 </p>
                 <div class="hero-actions">
-                    <a href="analyzer.html" class="btn btn-primary">Start Analysis ⚡</a>
-                    <a href="reports.html" class="btn btn-secondary">View Reports 📊</a>
+                    <a href="analyzer.html" class="btn btn-primary" id="heroAnalyzeBtn">Start Analysis ⚡</a>
+                    <a href="reports.html" class="btn btn-secondary" id="heroReportsBtn">View Reports 📊</a>
+                </div>
+                <!-- Animated stat counters -->
+                <div class="hero-stats-strip" id="heroStatsStrip">
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-value" id="statApis" data-target="8">0</span>
+                        <span class="hero-stat-label">Browser APIs</span>
+                    </div>
+                    <div class="hero-stats-divider"></div>
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-value" id="statMetrics" data-target="12">0</span>
+                        <span class="hero-stat-label">Metrics Tracked</span>
+                    </div>
+                    <div class="hero-stats-divider"></div>
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-value" id="statPages" data-target="6">0</span>
+                        <span class="hero-stat-label">App Pages</span>
+                    </div>
+                    <div class="hero-stats-divider"></div>
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-value" id="statZeroDeps">0</span>
+                        <span class="hero-stat-label">Dependencies</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -121,5 +143,33 @@
     <!-- Shared Application Logic -->
     <script src="js/settings.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        // Animated counter for hero stats
+        document.addEventListener('DOMContentLoaded', () => {
+            const counterEls = document.querySelectorAll('.hero-stat-value[data-target]');
+            counterEls.forEach(el => {
+                const target = parseInt(el.dataset.target, 10);
+                const duration = 1200;
+                const start = performance.now();
+                function tick(now) {
+                    const progress = Math.min((now - start) / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    el.textContent = Math.round(eased * target);
+                    if (progress < 1) requestAnimationFrame(tick);
+                }
+                // Delay start so it triggers when user sees it
+                setTimeout(() => requestAnimationFrame(tick), 400);
+            });
+            // "0 Dependencies" stays at 0 but still counts from -5 for fun
+            const zeroDeps = document.getElementById('statZeroDeps');
+            if (zeroDeps) {
+                let v = 0;
+                const interval = setInterval(() => {
+                    zeroDeps.textContent = v;
+                    if (v === 0) clearInterval(interval);
+                }, 200);
+            }
+        });
+    </script>
 </body>
 </html>
