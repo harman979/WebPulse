@@ -32,12 +32,14 @@ const DEFAULTS = {
         pageLoad: { good: 3000,  needs: 7000  },   // ms
     },
 
-    // Scoring weights (must sum to 1.0)
-    weights: {
-        cwv:       0.40,
-        loading:   0.25,
-        resources: 0.20,
-        issues:    0.15,
+    // Performance Budgets & SLA Compliance Limits
+    budgets: {
+        maxTotalSize: 2000, // KB
+        maxJsSize:    500,  // KB
+        maxCssSize:   120,  // KB
+        maxImgSize:   1000, // KB
+        maxLcp:       2500, // ms
+        maxPageLoad:  3500, // ms
     },
 };
 

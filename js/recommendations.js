@@ -277,6 +277,13 @@ function generateRecommendations(issues, metricsData, resourceData) {
         }
     }
 
+    // Attach Remediation Snippets (Day 7)
+    recs.forEach(rec => {
+        if (window.WebPulse.remediations) {
+            rec.snippet = window.WebPulse.remediations.getSnippet(rec);
+        }
+    });
+
     return recs;
 }
 

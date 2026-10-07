@@ -60,3 +60,10 @@ It uses native browser Performance APIs to collect performance information and p
 - **Range Filter** — Show Last 10, Last 20, or All reports; charts and stats update live
 - **Canvas Chart Engine** — Pure vanilla JS / Canvas 2D drawing engine (no external chart libraries), with gradient fills, threshold overlays, and hover tooltips
 - **Trends nav link** — Automatically injected into every page's header by `main.js`
+
+## Day 7 — Performance Budgeting & Advanced Diagnostics
+
+- **Performance Budget & SLA Engine** — Evaluate transfer size (Total, JS, CSS, Images) and timing metrics (LCP, Page Load) against configurable enterprise budgets with instant SLA pass/fail status and progress meters
+- **Network & Device Profile Throttling Simulator** — Simulate Fast 3G, Slow 3G, 4G, and CPU slowdowns (1x to 6x) with real-time recalculations of projected Core Web Vitals and WebPulse Scores
+- **Actionable Remediation Code Generator** — Generate copyable, production-ready code snippets (preloading, lazy loading, font-display, caching headers, dynamic imports) for all detected optimization recommendations with 1-click clipboard copy
+- **Settings SLA Controls** — Customize maximum payload limits and metric SLAs directly inside the Settings workspace

@@ -68,6 +68,9 @@
                 </div>
             </section>
 
+            <!-- Network & Device Profile Throttling Simulator (Day 7) -->
+            <div id="throttlingPanelContainer"></div>
+
             <!-- Score & Highlights Grid -->
             <div class="grid-layout top-overview-grid">
                 <!-- Performance Score Gauge Card -->
@@ -130,6 +133,15 @@
                         <span class="loading-value" id="pageLoadVal">--</span>
                     </div>
                 </div>
+            </section>
+
+            <!-- Performance Budget & SLA Compliance Card (Day 7) -->
+            <section class="card budget-card" id="budgetCardContainer">
+                <div class="card-header-flex">
+                    <h2>Performance Budget &amp; SLA Compliance</h2>
+                    <span class="status-badge status-good">Awaiting Analysis</span>
+                </div>
+                <div class="empty-state">Run an analysis to evaluate your page against configured performance budgets.</div>
             </section>
 
             <!-- Resource Analyzer Section -->
@@ -220,6 +232,9 @@
     <script src="js/performance.js"></script>
     <script src="js/resources.js"></script>
     <script src="js/scoring.js"></script>
+    <script src="js/budgets.js"></script>
+    <script src="js/throttling.js"></script>
+    <script src="js/remediations.js"></script>
     <script src="js/recommendations.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/export.js"></script>

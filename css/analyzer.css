@@ -535,3 +535,218 @@
     .filter-group { gap: 4px; }
     .filter-btn { font-size: 0.65rem; padding: 0.25rem 0.6rem; }
 }
+
+/* ─── Day 7: Throttling Simulator ───────────────────────────── */
+.throttling-card {
+    margin-bottom: var(--space-lg);
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(30, 41, 59, 0.4) 100%);
+    border: 1px solid var(--border-color);
+}
+.header-with-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+}
+.throttling-desc {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+    margin-bottom: var(--space-md);
+}
+.throttling-controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.control-group label {
+    font-size: var(--font-xs);
+    font-weight: 600;
+    color: var(--text-bright);
+}
+.sim-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: var(--space-sm);
+    background: var(--bg-dark);
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    animation: fadeIn 0.3s ease both;
+}
+.sim-result-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.sim-lbl {
+    font-size: 0.7rem;
+    color: var(--text-dimmed);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.sim-val {
+    font-size: var(--font-md);
+    font-weight: 700;
+    color: var(--text-bright);
+}
+.sim-val small {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-left: 4px;
+}
+.sim-placeholder-tip {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+    background: var(--bg-dark);
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border-subtle);
+}
+
+/* ─── Day 7: Performance Budgeting & SLA Card ──────────────── */
+.budget-card {
+    margin-bottom: var(--space-lg);
+}
+.budget-summary-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    background: var(--bg-dark);
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+}
+.budget-summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.budget-summary-val {
+    font-size: var(--font-lg);
+    font-weight: 800;
+    color: var(--text-bright);
+}
+.budget-summary-lbl {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+.budget-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+.budget-item-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--border-subtle);
+}
+.budget-item-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.budget-item-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.budget-item-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+.budget-name {
+    font-size: var(--font-xs);
+    font-weight: 600;
+    color: var(--text-bright);
+}
+.budget-status-pill {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: var(--radius-full);
+}
+.pill-good { background: rgba(34, 197, 94, 0.15); color: var(--good); border: 1px solid rgba(34, 197, 94, 0.3); }
+.pill-needs { background: rgba(234, 179, 8, 0.15); color: var(--needs-improvement); border: 1px solid rgba(234, 179, 8, 0.3); }
+.pill-poor { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+.budget-item-val {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+}
+.budget-delta {
+    font-size: 0.7rem;
+    color: var(--text-dimmed);
+    margin-left: 6px;
+}
+.budget-progress-track {
+    height: 6px;
+    background: var(--bg-dark);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    position: relative;
+}
+.budget-progress-bar {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width 0.4s ease;
+}
+.bg-good { background: var(--good); }
+.bg-needs { background: var(--needs-improvement); }
+.bg-poor { background: var(--danger); }
+
+/* ─── Day 7: Remediation Code Snippet Boxes ─────────────────── */
+.rec-snippet-box {
+    margin-top: var(--space-sm);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: var(--space-sm) var(--space-md);
+}
+.rec-snippet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+.rec-snippet-type {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--primary);
+}
+.copy-snippet-btn {
+    padding: 0.15rem 0.5rem;
+    font-size: 0.7rem;
+}
+.btn-copied {
+    background: var(--good-bg) !important;
+    color: var(--good) !important;
+    border-color: var(--good) !important;
+}
+.rec-snippet-code {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: #e2e8f0;
+    background: #0f172a;
+    padding: 8px 12px;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 4px 0;
+    white-space: pre-wrap;
+}
+.rec-snippet-hint {
+    font-size: 0.7rem;
+    color: var(--text-dimmed);
+    margin-top: 4px;
+}

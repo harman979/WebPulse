@@ -171,15 +171,41 @@ function renderRecommendations(recs) {
         el.recommendationsList.innerHTML = `<div class="empty-state">No specific recommendations at this time.</div>`;
         return;
     }
-    el.recommendationsList.innerHTML = recs.map((rec, i) => `
+    el.recommendationsList.innerHTML = recs.map((rec, i) => {
+        const hasSnippet = rec.snippet && rec.snippet.code;
+        const snippetId = `snippet_code_${i}`;
+        return `
         <div class="rec-item" style="animation-delay:${i * 0.05}s">
             <span class="rec-icon">${escHtml(rec.icon)}</span>
             <div class="rec-text">
                 <div class="rec-title">${escHtml(rec.title)}</div>
                 <div class="rec-desc">${escHtml(rec.desc)}</div>
+                ${hasSnippet ? `
+                    <div class="rec-snippet-box">
+                        <div class="rec-snippet-header">
+                            <span class="rec-snippet-type">${escHtml(rec.snippet.type)}</span>
+                            <button class="btn btn-sm btn-secondary copy-snippet-btn" data-snippet-id="${snippetId}">
+                                📋 Copy Code
+                            </button>
+                        </div>
+                        <pre class="rec-snippet-code"><code id="${snippetId}">${escHtml(rec.snippet.code)}</code></pre>
+                        <div class="rec-snippet-hint">💡 ${escHtml(rec.snippet.hint)}</div>
+                    </div>
+                ` : ''}
             </div>
-        </div>`
-    ).join('');
+        </div>`;
+    }).join('');
+
+    // Attach copy button click listeners
+    el.recommendationsList.querySelectorAll('.copy-snippet-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.dataset.snippetId;
+            const codeEl = document.getElementById(targetId);
+            if (codeEl && window.WebPulse.remediations) {
+                window.WebPulse.remediations.copySnippet(codeEl.textContent, btn);
+            }
+        });
+    });
 }
 
 /* ─── Resource Summary Badge ─────────────────────────────── */
@@ -238,6 +264,21 @@ async function runAnalysis() {
         updateResourceBadge(resourceData);
         renderIssues(issues);
         renderRecommendations(recs);
+
+        // Day 7: Render Budget Card & Throttling Simulator
+        if (window.WebPulse.budgets) {
+            const budgetContainer = document.getElementById('budgetCardContainer');
+            if (budgetContainer) {
+                const evalData = window.WebPulse.budgets.evaluate(metricsData, resourceData);
+                window.WebPulse.budgets.renderCard(budgetContainer, evalData);
+            }
+        }
+        if (window.WebPulse.throttling) {
+            const throttlingContainer = document.getElementById('throttlingPanelContainer');
+            if (throttlingContainer) {
+                window.WebPulse.throttling.renderPanel(throttlingContainer, metricsData);
+            }
+        }
 
         setStatus('Done', 'done');
         el.saveBtn.disabled = false;

@@ -252,6 +252,47 @@ function validateWeights() {
     return updateWeightTotal() === 100;
 }
 
+/* ─── Performance Budget Inputs (Day 7) ──────────────────── */
+const BUDGET_DEFS = [
+    { key: 'maxTotalSize', label: 'Max Total Transfer Size', unit: 'KB', hint: 'Maximum allowed transfer size for the entire page' },
+    { key: 'maxJsSize',    label: 'Max JavaScript Payload', unit: 'KB', hint: 'Maximum allowed total transfer size for scripts' },
+    { key: 'maxCssSize',   label: 'Max CSS Payload',        unit: 'KB', hint: 'Maximum allowed total size for stylesheets' },
+    { key: 'maxImgSize',   label: 'Max Image Payload',      unit: 'KB', hint: 'Maximum allowed total size for image assets' },
+    { key: 'maxLcp',       label: 'Max LCP Threshold',      unit: 'ms', hint: 'Maximum target Largest Contentful Paint duration' },
+    { key: 'maxPageLoad',  label: 'Max Page Load Duration', unit: 'ms', hint: 'Maximum target total page load duration' },
+];
+
+function buildBudgetsGrid(settings) {
+    const grid = $('budgetsGrid');
+    if (!grid) return;
+
+    const b = settings.budgets || {};
+
+    grid.innerHTML = BUDGET_DEFS.map(def => `
+        <div class="threshold-row">
+            <div>
+                <div class="threshold-label">${def.label}</div>
+                <div class="setting-hint">${def.hint}</div>
+            </div>
+            <div class="threshold-inputs">
+                <div class="form-group">
+                    <label>Limit (${def.unit})</label>
+                    <input type="number" class="form-control budget-input" id="bdg_${def.key}" data-budget="${def.key}" value="${b[def.key] ?? 1000}" min="1">
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    grid.querySelectorAll('.budget-input').forEach(input => {
+        input.addEventListener('input', () => {
+            const key = input.dataset.budget;
+            const val = parseFloat(input.value) || 0;
+            if (!_pendingSettings.budgets) _pendingSettings.budgets = {};
+            _pendingSettings.budgets[key] = val;
+        });
+    });
+}
+
 /* ─── Save & Reset ───────────────────────────────────────── */
 function handleSave() {
     const thresholdsOk = validateAllThresholds();
@@ -284,6 +325,7 @@ function handleReset() {
     initUnitSelector(_pendingSettings);
     buildThresholdsGrid(_pendingSettings);
     buildWeightsGrid(_pendingSettings);
+    buildBudgetsGrid(_pendingSettings);
 
     showToast('Settings reset to defaults.', 'success');
 }
@@ -297,6 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initUnitSelector(_pendingSettings);
     buildThresholdsGrid(_pendingSettings);
     buildWeightsGrid(_pendingSettings);
+    buildBudgetsGrid(_pendingSettings);
 
     $('saveSettingsBtn').addEventListener('click', handleSave);
     $('resetSettingsBtn').addEventListener('click', handleReset);
