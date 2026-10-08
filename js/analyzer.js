@@ -280,6 +280,24 @@ async function runAnalysis() {
             }
         }
 
+        // Day 8: Render Network Waterfall Card & Origin Diagnostics
+        if (window.WebPulse.waterfall) {
+            const wfCardContainer = document.getElementById('waterfallCardContainer');
+            const originContainer = document.getElementById('originDiagnosticsContainer');
+            const metricsSummary = {
+                fcp: metricsData.loading?.fcp,
+                lcp: metricsData.cwv?.lcp,
+                domLoading: metricsData.loading?.domLoad,
+                pageLoad: metricsData.loading?.pageLoad,
+            };
+            if (wfCardContainer) {
+                window.WebPulse.waterfall.renderWaterfallCard(resourceData, metricsSummary, wfCardContainer);
+            }
+            if (originContainer) {
+                window.WebPulse.waterfall.renderOriginBreakdownCard(resourceData, originContainer);
+            }
+        }
+
         setStatus('Done', 'done');
         el.saveBtn.disabled = false;
 

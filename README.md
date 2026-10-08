@@ -67,3 +67,11 @@ It uses native browser Performance APIs to collect performance information and p
 - **Network & Device Profile Throttling Simulator** — Simulate Fast 3G, Slow 3G, 4G, and CPU slowdowns (1x to 6x) with real-time recalculations of projected Core Web Vitals and WebPulse Scores
 - **Actionable Remediation Code Generator** — Generate copyable, production-ready code snippets (preloading, lazy loading, font-display, caching headers, dynamic imports) for all detected optimization recommendations with 1-click clipboard copy
 - **Settings SLA Controls** — Customize maximum payload limits and metric SLAs directly inside the Settings workspace
+
+## Day 8 — Network Waterfall & Main-Thread Diagnostics
+
+- **Interactive Network Waterfall Visualizer** — Visual resource timeline chart with multi-segmented timing phase bars (Stalled, DNS, TCP/SSL, TTFB Wait, Content Download) and milestone overlay lines for FCP, LCP, DOMContentLoaded, and Page Load
+- **Waterfall Interactive Controls** — Real-time URL search filter, type filter pills (JS, CSS, Images, Fonts, Fetch/XHR), sort selector (Start Time, Duration, Size, TTFB), and viewport zoom scale options (100%, 150%, 200%)
+- **Resource Timing Inspector Drawer** — Clickable inspector modal displaying exact phase timing breakdowns, transfer vs decoded sizes, protocol (h2/h3), and origin domain metadata
+- **Third-Party & Domain Origin Breakdown** — Group requests by host domain origin with progress bars and transfer size percentages
+- **Main-Thread Execution Bottleneck Monitor** — Flags heavy JavaScript bundles (> 50 KB or > 150ms execution time) and render-blocking resources that impede main-thread responsiveness

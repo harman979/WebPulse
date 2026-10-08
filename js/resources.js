@@ -82,8 +82,37 @@ function collectResources() {
     const resources = entries.map(entry => {
         const type     = getResourceType(entry);
         const typeInfo = TYPE_MAP[type];
-        const size     = entry.transferSize  || 0;
-        const duration = entry.duration      || 0;
+        const size     = entry.transferSize || entry.encodedBodySize || 0;
+        const duration = entry.duration || 0;
+        const startTime = entry.startTime || 0;
+
+        // Parse hostname domain
+        let domain = 'same-origin';
+        try {
+            const urlObj = new URL(entry.name);
+            domain = urlObj.hostname || 'same-origin';
+            if (urlObj.origin === window.location.origin) {
+                domain = 'same-origin (' + domain + ')';
+            }
+        } catch (_) {}
+
+        // Timing Phase Calculation (ms)
+        const fetchStart = entry.fetchStart || startTime;
+        const domainLookupStart = entry.domainLookupStart || fetchStart;
+        const domainLookupEnd = entry.domainLookupEnd || domainLookupStart;
+        const connectStart = entry.connectStart || domainLookupEnd;
+        const connectEnd = entry.connectEnd || connectStart;
+        const secureConnectionStart = entry.secureConnectionStart || 0;
+        const requestStart = entry.requestStart || connectEnd;
+        const responseStart = entry.responseStart || requestStart;
+        const responseEnd = entry.responseEnd || (startTime + duration);
+
+        const stalled  = Math.max(0, domainLookupStart - startTime);
+        const dns      = Math.max(0, domainLookupEnd - domainLookupStart);
+        const connect  = Math.max(0, (secureConnectionStart > 0 ? secureConnectionStart : connectEnd) - connectStart);
+        const ssl      = Math.max(0, secureConnectionStart > 0 ? connectEnd - secureConnectionStart : 0);
+        const ttfb     = Math.max(0, responseStart - requestStart);
+        const download = Math.max(0, responseEnd - responseStart);
 
         return {
             name:       getResourceName(entry.name),
@@ -93,9 +122,25 @@ function collectResources() {
             typeTag:    typeInfo.tag,
             barClass:   typeInfo.bar,
             size,
+            encodedBodySize: entry.encodedBodySize || size,
+            decodedBodySize: entry.decodedBodySize || size,
             sizeFormatted: formatBytes(size),
             duration:   Math.round(duration),
             durationFormatted: duration > 0 ? Math.round(duration) + 'ms' : '0ms',
+            startTime:  Math.round(startTime * 10) / 10,
+            endTime:    Math.round(responseEnd * 10) / 10,
+            domain,
+            initiatorType: entry.initiatorType || 'other',
+            nextHopProtocol: entry.nextHopProtocol || 'h2',
+            renderBlocking: entry.renderBlockingStatus === 'blocking',
+            phases: {
+                stalled:  Math.round(stalled * 10) / 10,
+                dns:      Math.round(dns * 10) / 10,
+                connect:  Math.round(connect * 10) / 10,
+                ssl:      Math.round(ssl * 10) / 10,
+                ttfb:     Math.round(ttfb * 10) / 10,
+                download: Math.round(download * 10) / 10,
+            }
         };
     });
 
