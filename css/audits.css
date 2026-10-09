@@ -1,0 +1,317 @@
+/* ─── WebPulse Best Practices, Security & Synthetic Presets Styles ─── */
+
+/* ─── Scenario Presets Toolbar Bar ─── */
+.preset-bar-wrapper {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+}
+
+.preset-bar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex: 1;
+    min-width: 260px;
+}
+
+.preset-bar-label {
+    font-size: var(--font-xs);
+    font-weight: 700;
+    color: var(--text-bright);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.preset-select-wrapper {
+    position: relative;
+    flex: 1;
+    max-width: 320px;
+}
+
+.preset-select {
+    width: 100%;
+    padding: 0.35rem 0.75rem;
+    font-size: var(--font-xs);
+    background: var(--bg-dark);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color var(--transition-base);
+}
+
+.preset-select:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.preset-desc-text {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    flex: 2;
+    min-width: 240px;
+}
+
+/* ─── Audits Card ─── */
+.audits-card {
+    margin-bottom: var(--space-lg);
+}
+
+.audits-filter-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.audit-tab-btn {
+    padding: 0.25rem 0.65rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-color);
+    background: var(--bg-dark);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.audit-tab-btn:hover {
+    color: var(--text-bright);
+    border-color: var(--text-muted);
+}
+
+.audit-tab-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+/* KPI Summary Strip */
+.audits-summary-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-sm);
+    margin: var(--space-md) 0;
+    background: var(--bg-dark);
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+}
+
+.audit-kpi-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.kpi-num {
+    font-size: var(--font-lg);
+    font-weight: 800;
+}
+
+.kpi-lbl {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    color: var(--text-dimmed);
+    margin-top: 2px;
+}
+
+.kpi-pass .kpi-num { color: var(--good); }
+.kpi-warn .kpi-num { color: var(--needs-improvement); }
+.kpi-fail .kpi-num { color: var(--danger); }
+.kpi-score .kpi-num { color: var(--info); }
+
+/* Audit Items */
+.audit-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.audit-item-row {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-sm) var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: border-color var(--transition-base), background var(--transition-base);
+}
+
+.audit-item-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: var(--border-color);
+}
+
+.audit-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.audit-item-title-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.audit-title {
+    font-size: var(--font-xs);
+    font-weight: 600;
+    color: var(--text-bright);
+}
+
+.audit-status-pill {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: var(--radius-full);
+}
+
+.audit-item-toggle {
+    font-size: 0.68rem;
+    padding: 0.15rem 0.5rem;
+}
+
+.audit-item-summary {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.audit-item-drawer {
+    display: none;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border-subtle);
+}
+
+.audit-item-row.expanded .audit-item-drawer {
+    display: block;
+    animation: fadeIn 0.2s ease both;
+}
+
+.audit-rec-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 6px 10px;
+}
+
+.audit-rec-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 2px;
+}
+
+.audit-rec-text {
+    font-size: 0.72rem;
+    color: var(--text-main);
+    line-height: 1.4;
+}
+
+/* ─── Badge Generator Modal Styles ─── */
+.badge-preview-box {
+    background: var(--bg-dark);
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge-preview-label {
+    font-size: var(--font-xs);
+    color: var(--text-dimmed);
+    text-transform: uppercase;
+}
+
+.badge-code-group label {
+    font-size: var(--font-xs);
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+    display: block;
+}
+
+.badge-input-row {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.badge-code-pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: monospace;
+    font-size: 0.72rem;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    overflow-x: auto;
+    margin: 4px 0;
+    white-space: pre;
+}
+
+/* ─── Settings Storage & DB Styles ─── */
+.storage-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.storage-kpi-card {
+    background: var(--bg-dark);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+}
+
+.storage-kpi-val {
+    font-size: var(--font-xl);
+    font-weight: 800;
+    color: var(--text-bright);
+}
+
+.storage-kpi-label {
+    font-size: 0.7rem;
+    color: var(--text-dimmed);
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.storage-btn-group {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .audits-summary-strip {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .preset-bar-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .preset-select-wrapper {
+        max-width: 100%;
+    }
+}

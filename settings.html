@@ -7,6 +7,7 @@
     <title>Settings — WebPulse</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/audits.css">
 </head>
 <body>
     <!-- Main Header & Navigation -->
@@ -178,6 +179,75 @@
                 <div id="budgetsGrid"></div>
             </section>
 
+            <!-- ── Section 6: Storage Engine & Database Management (Day 10) ── -->
+            <section class="settings-section animate-slide-up" style="animation-delay:.24s">
+                <div class="settings-section-header">
+                    <div class="settings-section-icon">🗄️</div>
+                    <div>
+                        <div class="settings-section-title">Storage &amp; Database Management</div>
+                        <div class="settings-section-subtitle">
+                            Dual-layer persistence across IndexedDB &amp; LocalStorage, session cookies, and database backup/restore.
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding: var(--space-lg) var(--space-xl);">
+                    <div class="storage-kpi-grid">
+                        <div class="storage-kpi-card">
+                            <span class="storage-kpi-val" id="statLocalBytes">0 KB</span>
+                            <span class="storage-kpi-label">LocalStorage Size</span>
+                        </div>
+                        <div class="storage-kpi-card">
+                            <span class="storage-kpi-val" id="statIdbCount">0</span>
+                            <span class="storage-kpi-label">IndexedDB Snapshots</span>
+                        </div>
+                        <div class="storage-kpi-card">
+                            <span class="storage-kpi-val" id="statCookiesCount">0</span>
+                            <span class="storage-kpi-label">Active Session Cookies</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-row" style="padding-left:0; padding-right:0;">
+                        <div class="setting-label-group">
+                            <div class="setting-label">Database Backup &amp; Migration</div>
+                            <div class="setting-hint">
+                                Export all reports, settings, and audits as a single JSON backup file, or restore from a previous backup.
+                            </div>
+                        </div>
+                        <div class="setting-control">
+                            <div class="storage-btn-group">
+                                <button class="btn btn-secondary btn-sm" id="exportDbBtn">
+                                    <span class="btn-icon">📦</span> Export Backup (.json)
+                                </button>
+                                <label class="btn btn-secondary btn-sm" style="cursor:pointer; margin-bottom:0;">
+                                    <span class="btn-icon">📥</span> Restore Backup
+                                    <input type="file" id="importDbInput" accept=".json" style="display:none;">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-row" style="padding-left:0; padding-right:0;">
+                        <div class="setting-label-group">
+                            <div class="setting-label">Sync &amp; Storage Maintenance</div>
+                            <div class="setting-hint">
+                                Force synchronization between LocalStorage and IndexedDB or clear browser caches.
+                            </div>
+                        </div>
+                        <div class="setting-control">
+                            <div class="storage-btn-group">
+                                <button class="btn btn-secondary btn-sm" id="forceSyncDbBtn">
+                                    <span class="btn-icon">🔄</span> Sync IDB &harr; Local
+                                </button>
+                                <button class="btn btn-danger btn-sm" id="wipeAllDatabasesBtn">
+                                    <span class="btn-icon">🗑️</span> Wipe All Stores
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- ── Actions Bar ── -->
             <div class="settings-actions animate-slide-up" style="animation-delay:.25s">
                 <div class="settings-actions-left">
@@ -207,6 +277,8 @@
     <!-- Scripts -->
     <script src="js/settings.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/idb-storage.js"></script>
     <script src="js/settings-page.js"></script>
 </body>
 </html>

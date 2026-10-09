@@ -51,6 +51,11 @@ const el = {
     exportJSONBtn:  $('exportJSONBtn'),
     exportCSVBtn:   $('exportCSVBtn'),
     exportPrintBtn: $('exportPrintBtn'),
+    exportBadgeBtn: $('exportBadgeBtn'),
+    // Presets & Audits (Day 10)
+    scenarioPresetSelect: $('scenarioPresetSelect'),
+    presetDescText:       $('presetDescText'),
+    auditsCardContainer:  $('auditsCardContainer'),
 };
 
 /* ─── Status Helpers ─────────────────────────────────────── */
@@ -235,9 +240,21 @@ async function runAnalysis() {
     setStatus('Running…', 'running');
 
     try {
-        // 1. Collect metrics
-        const metricsData   = await window.WebPulse.performance.collectAllMetrics();
-        const resourceData  = window.WebPulse.resources.collectResources();
+        const selectedPresetId = el.scenarioPresetSelect ? el.scenarioPresetSelect.value : 'live';
+        const preset = window.WebPulse.presets ? window.WebPulse.presets.getPreset(selectedPresetId) : { isLive: true };
+
+        let metricsData = null;
+        let resourceData = null;
+
+        if (preset.isLive) {
+            // 1a. Real-time Browser Performance APIs
+            metricsData  = await window.WebPulse.performance.collectAllMetrics();
+            resourceData = window.WebPulse.resources.collectResources();
+        } else {
+            // 1b. Synthetic Audit Scenario Profile Simulation
+            metricsData  = JSON.parse(JSON.stringify(preset.metrics));
+            resourceData = window.WebPulse.presets.buildResourceSummary(preset.resources);
+        }
 
         // 2. Detect issues
         const issues        = window.WebPulse.recommendations.detectIssues(metricsData, resourceData);
@@ -253,9 +270,10 @@ async function runAnalysis() {
         state.lastResources = resourceData;
         state.lastIssues    = issues;
         state.lastScore     = { score, rating, breakdown };
+        state.lastPresetId  = selectedPresetId;
         state.analysisRan   = true;
 
-        // 6. Render
+        // 6. Render Core Vitals & Resources
         renderScore(score, rating);
         renderCWV(metricsData.cwv);
         renderLoading(metricsData.loading);
@@ -298,6 +316,19 @@ async function runAnalysis() {
             }
         }
 
+        // Day 10: Run & Render Best Practices & Security Audits
+        if (window.WebPulse.audits && el.auditsCardContainer) {
+            const auditReport = window.WebPulse.audits.runAudits(preset);
+            state.lastAudits = auditReport;
+            window.WebPulse.audits.renderAuditsCard(el.auditsCardContainer, auditReport);
+        }
+
+        // Update Cookie Run Counter
+        if (window.WebPulse.cookies) {
+            const count = parseInt(window.WebPulse.cookies.get('webpulse_audit_count') || '0', 10) + 1;
+            window.WebPulse.cookies.set('webpulse_audit_count', count.toString(), 30);
+        }
+
         setStatus('Done', 'done');
         el.saveBtn.disabled = false;
 
@@ -314,19 +345,37 @@ async function runAnalysis() {
 }
 
 /* ─── Save Report ────────────────────────────────────────── */
-function handleSaveReport() {
+async function handleSaveReport() {
     if (!state.analysisRan || !state.lastMetrics) return;
 
-    const { success, report } = window.WebPulse.storage.saveReport({
+    const presetName = el.scenarioPresetSelect && el.scenarioPresetSelect.selectedOptions[0]
+        ? el.scenarioPresetSelect.selectedOptions[0].text.split('(')[0].trim()
+        : 'Live';
+
+    const reportPayload = {
         score:        state.lastScore.score,
         rating:       state.lastScore.rating,
         breakdown:    state.lastScore.breakdown,
         metricsData:  state.lastMetrics,
         resourceData: state.lastResources,
         issues:       state.lastIssues,
-    });
+        title:        `${presetName} Analysis — ${new Date().toLocaleTimeString()}`
+    };
 
-    if (success) {
+    const { success, report } = window.WebPulse.storage.saveReport(reportPayload);
+
+    if (success && report) {
+        // Tag with preset ID
+        report.preset = state.lastPresetId || 'live';
+        if (state.lastAudits) {
+            report.auditsScore = state.lastAudits.overallScore;
+        }
+
+        // Dual persist to IndexedDB
+        if (window.WebPulse.idb) {
+            await window.WebPulse.idb.saveReportIDB(report);
+        }
+
         el.saveBtn.disabled = true;
         el.saveBtn.innerHTML = '<span class="btn-icon">✅</span> Saved!';
         setTimeout(() => {
@@ -400,12 +449,47 @@ function wireExportButtons() {
     el.exportPrintBtn.addEventListener('click', function() {
         window.WebPulse.export.exportReportPrint(buildLiveReport());
     });
+    if (el.exportBadgeBtn) {
+        el.exportBadgeBtn.addEventListener('click', function() {
+            if (state.lastScore && window.WebPulse.badge) {
+                window.WebPulse.badge.showBadgeModal(state.lastScore.score);
+            }
+        });
+    }
+}
+
+function wirePresetSelector() {
+    if (!el.scenarioPresetSelect) return;
+
+    el.scenarioPresetSelect.addEventListener('change', () => {
+        const selectedId = el.scenarioPresetSelect.value;
+        const preset = window.WebPulse.presets ? window.WebPulse.presets.getPreset(selectedId) : null;
+        if (preset && el.presetDescText) {
+            el.presetDescText.textContent = preset.desc;
+        }
+        if (window.WebPulse.cookies) {
+            window.WebPulse.cookies.set('webpulse_active_preset', selectedId, 30);
+        }
+    });
+
+    // Restore from cookie
+    if (window.WebPulse.cookies) {
+        const saved = window.WebPulse.cookies.get('webpulse_active_preset');
+        if (saved && window.WebPulse.presets && window.WebPulse.presets.PRESETS[saved]) {
+            el.scenarioPresetSelect.value = saved;
+            const preset = window.WebPulse.presets.getPreset(saved);
+            if (preset && el.presetDescText) {
+                el.presetDescText.textContent = preset.desc;
+            }
+        }
+    }
 }
 
 /* ─── Init ───────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
     el.runBtn.addEventListener('click', runAnalysis);
     el.saveBtn.addEventListener('click', handleSaveReport);
+    wirePresetSelector();
     wireFilterButtons();
     wireSortSelect();
     wireExportButtons();

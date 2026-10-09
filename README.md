@@ -75,3 +75,12 @@ It uses native browser Performance APIs to collect performance information and p
 - **Resource Timing Inspector Drawer** — Clickable inspector modal displaying exact phase timing breakdowns, transfer vs decoded sizes, protocol (h2/h3), and origin domain metadata
 - **Third-Party & Domain Origin Breakdown** — Group requests by host domain origin with progress bars and transfer size percentages
 - **Main-Thread Execution Bottleneck Monitor** — Flags heavy JavaScript bundles (> 50 KB or > 150ms execution time) and render-blocking resources that impede main-thread responsiveness
+
+## Day 9 — Synthetic Presets, Best Practices Engine, IndexedDB & SVG Badges
+
+- **Synthetic Audit Scenario Profiles Sandbox** — Benchmark diverse real-world architectures (Live Browser Session, E-Commerce Storefront, SaaS Web Application, News & Media Publisher, Optimized Jamstack Blog) with authentic multi-phase resource waterfalls, Core Web Vitals distributions, and simulated bottlenecks.
+- **Automated Web Best Practices, Security & SEO Audit Engine** — Lighthouse-style automated diagnostic suite evaluating 10 web standard criteria across HTTPS encryption, mixed content detection, rel="noopener" link security, Content Security Policy (CSP), mobile viewport, semantic heading structure, document title & meta description, explicit image dimensions (CLS prevention), modern image formats (WebP/AVIF), and font-display swap optimization.
+- **Dual-Layer Persistence with Native IndexedDB** — Full asynchronous IndexedDB implementation (`WebPulseDB` v1) with structured object store, multi-key indices, and transparent automatic mirroring from `localStorage` to bypass 5 MB storage quotas.
+- **RFC-Compliant Cookie Session Management** — Seamless cookie tracking for active user session preferences (`webpulse_last_page`, `webpulse_active_preset`, and `webpulse_audit_count`) demonstrating full browser storage API compliance.
+- **Database Backup, Export & One-Click Restore** — Download entire application state, audit history, and preferences as formatted `.json` backup with client-side file reading, schema validation, and database deduplication.
+- **Dynamic SVG Performance Status Badges & CI/CD SLA Snippets** — Generate standalone, shields.io-compatible vector SVG status badges with instant Markdown copy, downloadable `.svg` vector files, and ready-to-run GitHub Actions workflow CI/CD SLA gating YAML assertions.

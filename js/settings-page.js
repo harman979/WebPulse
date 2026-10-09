@@ -326,8 +326,90 @@ function handleReset() {
     buildThresholdsGrid(_pendingSettings);
     buildWeightsGrid(_pendingSettings);
     buildBudgetsGrid(_pendingSettings);
+    refreshStorageStats();
 
     showToast('Settings reset to defaults.', 'success');
+}
+
+/* ─── Day 10: Storage & Database Management ─────────────── */
+async function refreshStorageStats() {
+    if (!window.WebPulse || !window.WebPulse.idb) return;
+    try {
+        const stats = await window.WebPulse.idb.getStorageStats();
+        const statLocal = $('statLocalBytes');
+        const statIdb   = $('statIdbCount');
+        const statCookies = $('statCookiesCount');
+
+        if (statLocal)   statLocal.textContent = `${stats.localStorageKB} KB`;
+        if (statIdb)     statIdb.textContent = `${stats.idbReportCount} snapshots`;
+        if (statCookies) statCookies.textContent = `${stats.cookiesCount} active`;
+    } catch (e) {
+        console.warn('[WebPulse Settings] Error reading storage stats:', e);
+    }
+}
+
+function initStorageManagement() {
+    refreshStorageStats();
+
+    // Export DB Backup
+    const exportBtn = $('exportDbBtn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', async () => {
+            if (window.WebPulse.idb) {
+                await window.WebPulse.idb.exportBackupJSON();
+                showToast('Database backup downloaded successfully!', 'success');
+            }
+        });
+    }
+
+    // Import / Restore DB Backup
+    const importInput = $('importDbInput');
+    if (importInput) {
+        importInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const text = event.target.result;
+                const result = await window.WebPulse.idb.restoreBackupJSON(text);
+                if (result.success) {
+                    showToast(result.message, 'success');
+                    refreshStorageStats();
+                } else {
+                    showToast(result.message, 'danger');
+                }
+                importInput.value = '';
+            };
+            reader.readAsText(file);
+        });
+    }
+
+    // Force Sync
+    const syncBtn = $('forceSyncDbBtn');
+    if (syncBtn) {
+        syncBtn.addEventListener('click', async () => {
+            if (window.WebPulse.idb) {
+                await window.WebPulse.idb.syncFromLocalStorage();
+                await refreshStorageStats();
+                showToast('IndexedDB and LocalStorage synchronized!', 'success');
+            }
+        });
+    }
+
+    // Wipe All
+    const wipeBtn = $('wipeAllDatabasesBtn');
+    if (wipeBtn) {
+        wipeBtn.addEventListener('click', async () => {
+            const ok = confirm('Are you sure you want to completely erase all saved reports from both LocalStorage and IndexedDB? This action cannot be undone.');
+            if (ok) {
+                if (window.WebPulse.storage) window.WebPulse.storage.clearAllReports();
+                if (window.WebPulse.idb) await window.WebPulse.idb.clearAllReportsIDB();
+                await refreshStorageStats();
+                showToast('All storage stores wiped clean.', 'info');
+            }
+        });
+    }
 }
 
 /* ─── Init ───────────────────────────────────────────────── */
@@ -340,6 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
     buildThresholdsGrid(_pendingSettings);
     buildWeightsGrid(_pendingSettings);
     buildBudgetsGrid(_pendingSettings);
+    initStorageManagement();
 
     $('saveSettingsBtn').addEventListener('click', handleSave);
     $('resetSettingsBtn').addEventListener('click', handleReset);

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/analyzer.css">
     <link rel="stylesheet" href="css/waterfall.css">
+    <link rel="stylesheet" href="css/audits.css">
 </head>
 <body>
     <!-- Header & Navigation -->
@@ -41,6 +42,25 @@
                 </div>
             </div>
 
+            <!-- Synthetic Scenario & Audit Profile Preset Bar (Day 10) -->
+            <div class="preset-bar-wrapper">
+                <div class="preset-bar-left">
+                    <span class="preset-bar-label">🎯 Audit Scenario Profile:</span>
+                    <div class="preset-select-wrapper">
+                        <select id="scenarioPresetSelect" class="preset-select">
+                            <option value="live">🌐 Live Page Context (Current Session)</option>
+                            <option value="ecommerce">🛒 E-Commerce Storefront (Heavy Assets)</option>
+                            <option value="saas_spa">💻 SaaS Web Application (JS Heavy SPA)</option>
+                            <option value="news_media">📰 News &amp; Media Publication (Ads &amp; Fonts)</option>
+                            <option value="jamstack_blog">⚡ Optimized Jamstack Blog (Top Performance)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="preset-desc-text" id="presetDescText">
+                    Collects real-time browser Performance APIs from the current active page session.
+                </div>
+            </div>
+
             <!-- Controls Toolbar -->
             <section class="toolbar-section">
                 <div class="toolbar-left">
@@ -64,6 +84,9 @@
                         </button>
                         <button class="btn btn-secondary btn-sm" id="exportPrintBtn" title="Print / Save as PDF">
                             <span class="btn-icon">🖨️</span> PDF
+                        </button>
+                        <button class="btn btn-secondary btn-sm" id="exportBadgeBtn" title="Generate SVG Status Badge &amp; CI/CD SLA">
+                            <span class="btn-icon">🏷️</span> Badge
                         </button>
                     </div>
                 </div>
@@ -205,6 +228,9 @@
             <!-- Origin Breakdown & Main-Thread Diagnostics (Day 8) -->
             <div id="originDiagnosticsContainer"></div>
 
+            <!-- Best Practices, Security & SEO Audit Card (Day 10) -->
+            <div id="auditsCardContainer"></div>
+
             <!-- Issues & Recommendations Grid -->
             <div class="grid-layout bottom-diagnostics-grid">
                 <!-- Detected Issues Card -->
@@ -243,6 +269,10 @@
     <script src="js/throttling.js"></script>
     <script src="js/remediations.js"></script>
     <script src="js/recommendations.js"></script>
+    <script src="js/presets.js"></script>
+    <script src="js/audits.js"></script>
+    <script src="js/idb-storage.js"></script>
+    <script src="js/badge-generator.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/export.js"></script>
     <script src="js/waterfall.js"></script>

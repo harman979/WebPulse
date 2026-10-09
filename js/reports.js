@@ -42,6 +42,7 @@ const el = {
     modalExportCSV:     $('modalExportCSVBtn'),
     modalExportPrint:   $('modalExportPrintBtn'),
     modalShare:         $('modalShareBtn'),
+    modalBadge:         $('modalBadgeBtn'),
 
     // Comparison modal
     comparisonModal:    $('comparisonModal'),
@@ -155,6 +156,7 @@ function renderTable(reports) {
             <td>
                 <div class="row-actions">
                     <button class="action-btn" data-action="view" data-id="${escHtml(r.id)}" title="View Details">👁️</button>
+                    <button class="action-btn" data-action="badge" data-id="${escHtml(r.id)}" title="SVG Status Badge">🏷️</button>
                     <button class="action-btn delete-btn" data-action="delete" data-id="${escHtml(r.id)}" title="Delete Report">🗑️</button>
                 </div>
             </td>
@@ -417,6 +419,12 @@ function wireTableEvents() {
 
         if (action === 'view' && id) { openDetailModal(id); return; }
 
+        if (action === 'badge' && id) {
+            const r = window.WebPulse.storage.getReport(id);
+            if (r && window.WebPulse.badge) window.WebPulse.badge.showBadgeModal(r.score, r.title);
+            return;
+        }
+
         if (action === 'delete' && id) {
             if (!confirm('Delete this report? This cannot be undone.')) return;
             state.selectedIds.delete(id);
@@ -511,6 +519,12 @@ function wireModals() {
         }).catch(() => {
             window.prompt('Copy this share link:', url);
         });
+    });
+    el.modalBadge?.addEventListener('click', () => {
+        const r = state.openModalReportId && window.WebPulse.storage.getReport(state.openModalReportId);
+        if (r && window.WebPulse.badge) {
+            window.WebPulse.badge.showBadgeModal(r.score, r.title);
+        }
     });
 
     // Comparison modal
