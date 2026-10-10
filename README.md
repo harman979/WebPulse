@@ -183,18 +183,23 @@ WebPulse/
 * **Dual-Layer Persistence**: Combines synchronous `localStorage` for instant UI initialization with asynchronous `IndexedDB` (`WebPulseDB` v1) to safely scale past standard 5 MB storage quotas.
 * **Accessible and Responsive Design**: Fully responsive CSS Grid and Flexbox layouts with full keyboard navigation shortcuts (`G H`, `G A`, `G R`, `G T`, `G S`, `T`, `Space`, `Esc`), high-contrast focus rings, and dark/light mode tokens.
 
-### 4.3 Data Flow (per Tool Pipeline)
+### 4.3 Data Flow
 
-* **Analyzer Pipeline**:
-  $$\text{User Target URL / Preset} \longrightarrow \begin{cases} \text{Browser Performance APIs} \\ \text{Synthetic Architecture Generator} \end{cases} \longrightarrow \text{recommendations.js} \longrightarrow \text{scoring.js} \longrightarrow \text{UI View Update}$$
-* **Network Waterfall Pipeline**:
-  $$\text{Resource Timing Entries} \longrightarrow \text{Calculate Phase Delays (DNS, Connect, TTFB, Download)} \longrightarrow \text{Render Multi-Segment Bars} \longrightarrow \text{Inspector Modal Drawer}$$
-* **Throttling Pipeline**:
-  $$\text{Base Metrics} \times \text{Network Latency Multipliers} \times \text{CPU Multipliers} \longrightarrow \text{Projected Vitals} \longrightarrow \text{Live Recomputed Score}$$
-* **Security & Best Practices Audit Pipeline**:
-  $$\text{Live DOM Tree / Architectural Heuristics} \longrightarrow \text{Evaluate 10 Security & SEO Standards} \longrightarrow \text{Compute Category Scores} \longrightarrow \text{Render Audit Badges}$$
-* **Comparison Matrix Pipeline**:
-  $$\text{Select 2 Stored Reports} \longrightarrow \text{Extract 12 Metrics} \longrightarrow \text{Calculate Absolute & Percentage Deltas} \longrightarrow \text{Render Side-by-Side Matrix Table}$$
+```mermaid
+flowchart LR
+    A[Target URL / Preset] --> B[Collect Metrics & Waterfall]
+    B --> C[Audit & Bottleneck Engine]
+    C --> D[Calculate Score 0–100]
+    D --> E[Dashboard, Charts & Reports]
+```
+
+At a glance, each tool follows a straightforward pipeline:
+
+* **Analyzer**: `Target URL / Preset` &rarr; `Browser APIs / Presets` &rarr; `Bottleneck Detection` &rarr; `Score Calculation` &rarr; `Dashboard View`
+* **Waterfall**: `Resource Timings` &rarr; `Calculate Phase Delays (DNS, TCP, TTFB, Download)` &rarr; `Interactive Visual Bars`
+* **Throttling**: `Base Metrics` &times; `Network & CPU Multipliers` &rarr; `Projected Vitals & Recomputed Score`
+* **Audits**: `DOM Inspection` &rarr; `10 Security & SEO Rules` &rarr; `Pass/Fail Badges & Fix Snippets`
+* **Comparison**: `Select 2 Saved Reports` &rarr; `Compute 12 Metric Deltas` &rarr; `Side-by-Side Winner Matrix`
 
 ---
 
@@ -205,7 +210,7 @@ WebPulse requires no build step, no compiler, and zero dependencies to install.
 ### Run Locally:
 1. Clone or download this repository:
    ```bash
-   git clone https://github.com/your-username/WebPulse.git
+   git clone https://github.com/harman979/WebPulse.git
    cd WebPulse
    ```
 2. Open `index.html` directly in any modern browser (Chrome, Firefox, Edge, Safari):
