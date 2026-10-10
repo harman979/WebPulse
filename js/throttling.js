@@ -77,12 +77,16 @@
         const estDOM = Math.round(origDOM * net.latencyMult * cpu.mult);
         const estPageLoad = Math.round(origPageLoad * net.latencyMult * cpu.mult + net.rttAdd * 1.5);
 
-        // Calculate projected score using WebPulse scoring module
-        const formatFn = window.WebPulse.performance ? window.WebPulse.performance.formatTime : (val => Math.round(val) + ' ms');
+        // Format helper with universal fallback
+        const formatFn = (val) => {
+            if (window.WebPulse?.performance?.formatMs) return window.WebPulse.performance.formatMs(val);
+            if (window.WebPulse?.settings?.formatTime) return window.WebPulse.settings.formatTime(val);
+            return Math.round(val) + ' ms';
+        };
 
         const simCwv = {
             lcp: { value: estLCP, formatted: formatFn(estLCP) },
-            cls: { value: baseMetrics.cwv.cls.value, formatted: baseMetrics.cwv.cls.formatted },
+            cls: { value: baseMetrics.cwv?.cls?.value ?? 0.05, formatted: baseMetrics.cwv?.cls?.formatted ?? '0.050' },
             inp: { value: estINP, formatted: formatFn(estINP) }
         };
 
@@ -93,10 +97,11 @@
             pageLoad: { value: estPageLoad, formatted: formatFn(estPageLoad) }
         };
 
-        const simScoreResult = window.WebPulse.scoring ?
-            window.WebPulse.scoring.calculate(
+        const simScoreFn = window.WebPulse?.scoring?.computeScore || window.WebPulse?.scoring?.calculate;
+        const simScoreResult = typeof simScoreFn === 'function' ?
+            simScoreFn(
                 { cwv: simCwv, loading: simLoading },
-                window.WebPulse.lastResources || { totalTransferSize: 0, totalCount: 0 },
+                window.WebPulse.lastResources || { grandTotal: 0, count: 0, totals: {} },
                 window.WebPulse.lastIssues || []
             ) : { score: 80, rating: 'Good' };
 
@@ -232,6 +237,7 @@
         profiles: NETWORK_PROFILES,
         cpuProfiles: CPU_PROFILES,
         simulate: simulateMetrics,
+        simulateMetrics: simulateMetrics,
         renderPanel: renderSimulatorPanel
     };
 })();

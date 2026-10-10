@@ -1,4 +1,4 @@
-﻿/**
+/**
  * trends.js — WebPulse Historical Trends Page Controller
  *
  * Reads saved reports from storage, computes trend statistics,
@@ -40,6 +40,15 @@ function initTrends() {
 
     if (allReports.length < 2) {
         container.innerHTML = buildEmptyState();
+        const seedBtn = document.getElementById('seedTrendsDemoBtn');
+        if (seedBtn) {
+            seedBtn.addEventListener('click', () => {
+                if (window.WebPulse && window.WebPulse.storage) {
+                    window.WebPulse.storage.seedSampleReports();
+                    initTrends();
+                }
+            });
+        }
         return;
     }
 
@@ -314,7 +323,10 @@ function buildEmptyState() {
         '<span class="trends-empty-icon">📈</span>' +
         '<h2>Not enough data yet</h2>' +
         '<p>Save at least 2 performance reports from the Analyzer to unlock historical trend charts.</p>' +
+        '<div style="display:flex;gap:0.75rem;justify-content:center;margin-top:1.25rem;flex-wrap:wrap;">' +
         '<a href="analyzer.html" class="btn btn-primary"><span class="btn-icon">⚡</span> Run an Analysis</a>' +
+        '<button class="btn btn-secondary" id="seedTrendsDemoBtn"><span class="btn-icon">📦</span> Load Benchmark Dataset</button>' +
+        '</div>' +
         '</div>';
 }
 

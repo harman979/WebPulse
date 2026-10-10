@@ -149,6 +149,14 @@
      */
     function buildResourceSummary(rawList) {
         const typeKeys = ['script', 'link', 'img', 'font', 'fetch', 'other'];
+        const typeMap = (window.WebPulse && window.WebPulse.resources) ? window.WebPulse.resources.TYPE_MAP : {
+            script: { label: 'JS', tag: 'script', bar: 'bar-script' },
+            link:   { label: 'CSS', tag: 'link', bar: 'bar-link' },
+            img:    { label: 'Image', tag: 'img', bar: 'bar-img' },
+            font:   { label: 'Font', tag: 'font', bar: 'bar-font' },
+            fetch:  { label: 'Fetch/XHR', tag: 'fetch', bar: 'bar-fetch' },
+            other:  { label: 'Other', tag: 'other', bar: 'bar-other' },
+        };
         const totals = {};
         typeKeys.forEach(k => {
             totals[k] = { count: 0, size: 0, sizeFormatted: '0 B' };
@@ -162,25 +170,53 @@
             const t = totals[r.type] ? r.type : 'other';
             totals[t].count++;
             totals[t].size += sz;
+            const tInfo = typeMap[t] || typeMap.other;
+
+            let domain = 'same-origin';
+            try {
+                const u = new URL(r.name);
+                domain = u.hostname || 'same-origin';
+            } catch (_) {}
+
+            const displayName = r.shortName || (function() {
+                try {
+                    const u = new URL(r.name);
+                    const parts = u.pathname.split('/').filter(Boolean);
+                    return parts[parts.length - 1] || u.hostname;
+                } catch(_) {
+                    return r.name.slice(0, 50);
+                }
+            })();
 
             return {
-                name: r.name,
-                shortName: r.shortName || r.name.split('/').pop() || r.name,
-                type: r.type,
-                initiatorType: r.initiatorType || r.type,
+                name: displayName,
+                url: r.name,
+                type: t,
+                typeLabel: tInfo.label,
+                typeTag: tInfo.tag,
+                barClass: tInfo.bar,
                 size: sz,
+                encodedBodySize: sz,
+                decodedBodySize: r.decodedSize || sz,
                 sizeFormatted: window.WebPulse.resources ? window.WebPulse.resources.formatBytes(sz) : `${(sz / 1024).toFixed(1)} KB`,
                 decodedSize: r.decodedSize || sz,
                 decodedSizeFormatted: window.WebPulse.resources ? window.WebPulse.resources.formatBytes(r.decodedSize || sz) : `${(sz / 1024).toFixed(1)} KB`,
                 duration: dur,
                 durationFormatted: `${dur}ms`,
                 startTime: r.startTime || 0,
-                ttfb: r.ttfb || Math.round(dur * 0.5),
-                download: r.download || Math.round(dur * 0.5),
-                dns: r.dns || 0,
-                tcp: r.tcp || 0,
-                ssl: r.ssl || 0,
-                protocol: r.protocol || 'h2'
+                endTime: Math.round(((r.startTime || 0) + dur) * 10) / 10,
+                domain: domain,
+                initiatorType: r.initiatorType || t,
+                nextHopProtocol: r.protocol || 'h2',
+                renderBlocking: r.type === 'link' || (r.type === 'script' && dur > 200),
+                phases: {
+                    stalled: r.stalled || 0,
+                    dns: r.dns || 0,
+                    connect: r.tcp || 0,
+                    ssl: r.ssl || 0,
+                    ttfb: r.ttfb || Math.round(dur * 0.45),
+                    download: r.download || Math.max(1, Math.round(dur * 0.55)),
+                }
             };
         });
 

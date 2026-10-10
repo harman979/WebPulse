@@ -7,7 +7,7 @@
     <title>Shared Performance Report — WebPulse</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <style>
         /* ── Share page overrides ─────────────────────────── */
         .share-wrap {
@@ -151,62 +151,93 @@
         </div>
     </footer>
 
-    <script src="js/settings.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/export.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/export.js"></script>
     <script>
     'use strict';
     (function() {
         var card = document.getElementById('shareCard');
         var snap = window.WebPulse.export.loadSharedReport();
 
+        function renderCard(s) {
+            function scoreClass(sc) { return sc >= 75 ? 'good' : sc >= 50 ? 'needs' : 'poor'; }
+            function mBox(label, val) {
+                if (!val) return '';
+                return '<div class="share-metric-box"><div class="share-metric-label">' + label + '</div><div class="share-metric-val">' + val + '</div></div>';
+            }
+
+            var tags = s.tg ? s.tg.split(',').filter(Boolean).map(function(t){ return '<span class="tag-chip">' + t.trim() + '</span>'; }).join('') : '';
+
+            card.innerHTML =
+                '<a href="index.html" class="share-brand">⚡ WebPulse &nbsp;<span style="font-weight:400;font-size:.85rem;color:var(--text-muted)">Shared Report</span></a>' +
+                '<div class="share-title">' + s.t + '</div>' +
+                '<div class="share-meta">Captured: ' + new Date(s.ts).toLocaleString() + '</div>' +
+
+                '<div class="share-score-row">' +
+                '<div class="share-score-badge ' + scoreClass(s.sc) + '">' + s.sc + '</div>' +
+                '<div><div style="font-size:1.1rem;font-weight:700;color:var(--text-main)">' + s.rt + '</div><div class="share-score-sub">WebPulse Score / 100</div></div>' +
+                '</div>' +
+
+                '<div class="share-section-label">Core Web Vitals</div>' +
+                '<div class="share-metrics-grid">' +
+                mBox('LCP', s.lcp) + mBox('CLS', s.cls) + mBox('INP', s.inp) +
+                '</div>' +
+
+                '<div class="share-section-label">Loading Performance</div>' +
+                '<div class="share-metrics-grid">' +
+                mBox('FCP', s.fcp) + mBox('TTFB', s.ttfb) + mBox('Page Load', s.pl) +
+                '</div>' +
+
+                '<div class="share-section-label">Resources</div>' +
+                '<div class="share-metrics-grid">' +
+                mBox('Count', s.rc != null ? String(s.rc) : null) + mBox('Total Size', s.rs) +
+                '</div>' +
+
+                (tags ? '<div class="share-tags"><strong>Tags:</strong> ' + tags + '</div>' : '') +
+
+                '<div class="share-cta">' +
+                '<a href="analyzer.html" class="btn btn-primary"><span class="btn-icon">⚡</span> Analyze My Page</a>' +
+                '<a href="reports.html"  class="btn btn-secondary"><span class="btn-icon">📁</span> View My Reports</a>' +
+                '</div>';
+
+            document.title = s.t + ' — WebPulse Shared Report';
+        }
+
         if (!snap) {
-            card.innerHTML = '<div class="share-error"><h2>⚠️ Invalid or missing share link</h2><p>The share link appears to be broken or expired.</p><a href="analyzer.html" class="btn btn-primary" style="margin-top:1.5rem;">Run Your Own Analysis</a></div>';
+            card.innerHTML = '<div class="share-error">' +
+                '<h2>🔗 Shared Report Viewer</h2>' +
+                '<p>No report parameters detected in the current URL. You can inspect an example benchmark report or analyze your own page.</p>' +
+                '<div style="display:flex;gap:0.75rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap;">' +
+                '<a href="analyzer.html" class="btn btn-primary"><span class="btn-icon">⚡</span> Run Live Analysis</a>' +
+                '<button class="btn btn-secondary" id="loadSampleCardBtn"><span class="btn-icon">📦</span> View Sample Report</button>' +
+                '</div>' +
+                '</div>';
+
+            var sampleBtn = document.getElementById('loadSampleCardBtn');
+            if (sampleBtn) {
+                sampleBtn.addEventListener('click', function() {
+                    renderCard({
+                        t: 'Sample E-Commerce Storefront Benchmark',
+                        ts: Date.now() - 3600000,
+                        sc: 88,
+                        rt: 'Good',
+                        lcp: '1.95s',
+                        cls: '0.040',
+                        inp: '140ms',
+                        fcp: '1.20s',
+                        ttfb: '180ms',
+                        pl: '2.40s',
+                        rc: 28,
+                        rs: '1.15 MB',
+                        tg: 'sample, benchmark, storefront'
+                    });
+                });
+            }
             return;
         }
 
-        function scoreClass(sc) { return sc >= 75 ? 'good' : sc >= 50 ? 'needs' : 'poor'; }
-        function mBox(label, val) {
-            if (!val) return '';
-            return '<div class="share-metric-box"><div class="share-metric-label">' + label + '</div><div class="share-metric-val">' + val + '</div></div>';
-        }
-
-        var tags = snap.tg ? snap.tg.split(',').filter(Boolean).map(function(t){ return '<span class="tag-chip">' + t.trim() + '</span>'; }).join('') : '';
-
-        card.innerHTML =
-            '<a href="index.html" class="share-brand">⚡ WebPulse &nbsp;<span style="font-weight:400;font-size:.85rem;color:var(--text-muted)">Shared Report</span></a>' +
-            '<div class="share-title">' + snap.t + '</div>' +
-            '<div class="share-meta">Captured: ' + new Date(snap.ts).toLocaleString() + '</div>' +
-
-            '<div class="share-score-row">' +
-            '<div class="share-score-badge ' + scoreClass(snap.sc) + '">' + snap.sc + '</div>' +
-            '<div><div style="font-size:1.1rem;font-weight:700;color:var(--text-main)">' + snap.rt + '</div><div class="share-score-sub">WebPulse Score / 100</div></div>' +
-            '</div>' +
-
-            '<div class="share-section-label">Core Web Vitals</div>' +
-            '<div class="share-metrics-grid">' +
-            mBox('LCP', snap.lcp) + mBox('CLS', snap.cls) + mBox('INP', snap.inp) +
-            '</div>' +
-
-            '<div class="share-section-label">Loading Performance</div>' +
-            '<div class="share-metrics-grid">' +
-            mBox('FCP', snap.fcp) + mBox('TTFB', snap.ttfb) + mBox('Page Load', snap.pl) +
-            '</div>' +
-
-            '<div class="share-section-label">Resources</div>' +
-            '<div class="share-metrics-grid">' +
-            mBox('Count', snap.rc != null ? String(snap.rc) : null) + mBox('Total Size', snap.rs) +
-            '</div>' +
-
-            (tags ? '<div class="share-tags"><strong>Tags:</strong> ' + tags + '</div>' : '') +
-
-            '<div class="share-cta">' +
-            '<a href="analyzer.html" class="btn btn-primary"><span class="btn-icon">⚡</span> Analyze My Page</a>' +
-            '<a href="reports.html"  class="btn btn-secondary"><span class="btn-icon">📁</span> View My Reports</a>' +
-            '</div>';
-
-        // Update page title dynamically
-        document.title = snap.t + ' — WebPulse Shared Report';
+        renderCard(snap);
     })();
     </script>
 </body>

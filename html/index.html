@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebPulse — Native browser performance analyzer to measure Core Web Vitals, loading metrics, and resource bottlenecks.">
+    <title>WebPulse — Web Performance Analyzer</title>
+    <!-- CSS Design System -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/home.css">
+</head>
+<body>
+    <!-- Main Header & Navigation -->
+    <header class="app-header">
+        <div class="header-container">
+            <a href="index.html" class="brand-logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">WebPulse</span>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="analyzer.html" class="nav-link">Analyzer</a>
+                <a href="reports.html" class="nav-link">Reports</a>
+            </nav>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+        </div>
+    </header>
+
+    <main id="mainContent">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-container">
+                <div class="badge-pill">Native Browser Performance Engine</div>
+                <h1 class="hero-title">Analyze. Understand. Optimize.</h1>
+                <p class="hero-subtitle">
+                    Measure your webpage's real-time performance using native browser Performance APIs, 
+                    Core Web Vitals, resource profiling, and rule-based bottleneck diagnostics.
+                </p>
+                <div class="hero-actions">
+                    <a href="analyzer.html" class="btn btn-primary" id="heroAnalyzeBtn">Start Analysis ⚡</a>
+                    <a href="reports.html" class="btn btn-secondary" id="heroReportsBtn">View Reports 📊</a>
+                </div>
+                <!-- Animated stat counters -->
+                <div class="hero-stats-strip" id="heroStatsStrip">
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-value" id="statApis" data-target="8">0</span>
+                        <span class="hero-stat-label">Browser APIs</span>
+                    </div>
+                    <div class="hero-stats-divider"></div>
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-value" id="statMetrics" data-target="12">0</span>
+                        <span class="hero-stat-label">Metrics Tracked</span>
+                    </div>
+                    <div class="hero-stats-divider"></div>
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-value" id="statPages" data-target="6">0</span>
+                        <span class="hero-stat-label">App Pages</span>
+                    </div>
+                    <div class="hero-stats-divider"></div>
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-value" id="statZeroDeps">0</span>
+                        <span class="hero-stat-label">Dependencies</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Web Vitals Intro Section -->
+        <section class="cwv-intro-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2>Core Web Vitals Overview</h2>
+                    <p>Key metrics defined by Google to quantify user experience quality on the web.</p>
+                </div>
+                <div class="cwv-cards-grid">
+                    <article class="cwv-card">
+                        <div class="cwv-badge">LCP</div>
+                        <h3>Largest Contentful Paint</h3>
+                        <p class="cwv-desc">Measures loading performance. To provide a good user experience, LCP should occur within 2.5 seconds of when the page first starts loading.</p>
+                        <div class="cwv-target">Target: <span>≤ 2.5s</span></div>
+                    </article>
+                    <article class="cwv-card">
+                        <div class="cwv-badge">CLS</div>
+                        <h3>Cumulative Layout Shift</h3>
+                        <p class="cwv-desc">Measures visual stability. To provide a good user experience, pages should maintain a CLS of 0.1 or less.</p>
+                        <div class="cwv-target">Target: <span>≤ 0.1</span></div>
+                    </article>
+                    <article class="cwv-card">
+                        <div class="cwv-badge">INP</div>
+                        <h3>Interaction to Next Paint</h3>
+                        <p class="cwv-desc">Measures page responsiveness to user input. Pages should aim for an INP of 200 milliseconds or less.</p>
+                        <div class="cwv-target">Target: <span>≤ 200ms</span></div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works & APIs Section -->
+        <section class="features-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2>How WebPulse Works</h2>
+                    <p>Built 100% with native Web Performance APIs without external dependencies.</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">⏱️</div>
+                        <h3>Navigation & Paint Timing</h3>
+                        <p>Extracts millisecond-accurate TTFB, DOM Interactive, FCP, and total page load duration via Navigation Timing API v2.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📦</div>
+                        <h3>Resource Profiler</h3>
+                        <p>Parses Resource Timing API entries to classify JS, CSS, Images, Fonts, and Fetch calls by transfer size and latency.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <h3>Rule-Based Bottlenecks</h3>
+                        <p>Runs deterministic JavaScript rules to highlight large uncompressed images, heavy scripts, and slow network requests.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💾</div>
+                        <h3>Persistent History & Diff</h3>
+                        <p>Saves snapshots to LocalStorage, allowing full CRUD management, tagging, notes, and side-by-side performance diffs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p>&copy; 2026 WebPulse. Built strictly with Vanilla HTML5, CSS3 &amp; JS.</p>
+            <p><a href="../LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a> | <a href="../README.md" target="_blank" rel="noopener noreferrer">Documentation</a></p>
+        </div>
+    </footer>
+
+    <!-- Shared Application Logic -->
+    <script src="../js/settings.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Animated counter for hero stats
+        document.addEventListener('DOMContentLoaded', () => {
+            const counterEls = document.querySelectorAll('.hero-stat-value[data-target]');
+            counterEls.forEach(el => {
+                const target = parseInt(el.dataset.target, 10);
+                const duration = 1200;
+                const start = performance.now();
+                function tick(now) {
+                    const progress = Math.min((now - start) / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    el.textContent = Math.round(eased * target);
+                    if (progress < 1) requestAnimationFrame(tick);
+                }
+                // Delay start so it triggers when user sees it
+                setTimeout(() => requestAnimationFrame(tick), 400);
+            });
+            // "0 Dependencies" stays at 0 but still counts from -5 for fun
+            const zeroDeps = document.getElementById('statZeroDeps');
+            if (zeroDeps) {
+                let v = 0;
+                const interval = setInterval(() => {
+                    zeroDeps.textContent = v;
+                    if (v === 0) clearInterval(interval);
+                }, 200);
+            }
+        });
+    </script>
+</body>
+</html>

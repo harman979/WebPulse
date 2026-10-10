@@ -40,9 +40,9 @@
     content: '';
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(circle, rgba(59, 130, 246, 0.15) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(59, 130, 246, 0.12) 1px, transparent 1px);
     background-size: 30px 30px;
-    animation: gridFloat 8s linear infinite;
+    animation: none !important; /* Completely stop vibrating grid dot animation */
     pointer-events: none;
     z-index: 0;
 }
@@ -56,7 +56,7 @@
         radial-gradient(ellipse 50% 60% at 80% 60%, rgba(139, 92, 246, 0.10) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
-    animation: orbFloat 14s ease-in-out infinite;
+    animation: none !important; /* Completely stopped — static calm ambient glow with zero vibration */
 }
 
 .hero-container {
@@ -83,11 +83,11 @@
     line-height: 1.1;
     letter-spacing: -0.02em;
     background: linear-gradient(135deg, var(--text-bright) 0%, #93c5fd 40%, var(--accent) 100%);
-    background-size: 200% auto;
+    background-size: 100% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: heroFadeUp 0.6s ease both 0.1s, shimmer 5s linear infinite;
+    animation: heroFadeUp 0.6s ease both 0.1s; /* Solid, stable crisp typography without rapid shimmer */
 }
 
 .hero-subtitle {

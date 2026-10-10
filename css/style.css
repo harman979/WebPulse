@@ -262,7 +262,16 @@ p   { color: var(--text-muted); line-height: 1.7; }
 }
 .brand-logo:hover { color: var(--text-bright); }
 
-.logo-icon { font-size: 1.4rem; }
+.logo-icon {
+    font-size: 1.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    animation: none !important;
+    transform: none !important;
+    user-select: none;
+}
 
 .main-nav {
     display: flex;
@@ -317,6 +326,8 @@ p   { color: var(--text-muted); line-height: 1.7; }
     display: flex;
     align-items: center;
     justify-content: center;
+    animation: none !important;
+    transform: none !important;
 }
 
 .theme-toggle-btn:hover {
@@ -758,6 +769,97 @@ p   { color: var(--text-muted); line-height: 1.7; }
 .scroll-revealed {
     opacity: 1 !important;
     transform: translateY(0) !important;
+}
+
+/* ─── Global Modals System (Perfect Viewport Centering) ──── */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+}
+
+.modal[aria-hidden="false"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: var(--space-md);
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.modal-content {
+    position: relative;
+    z-index: 1002;
+    margin: auto;
+    width: min(600px, calc(100vw - 2rem));
+    max-height: calc(100vh - 4rem);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.modal-large {
+    width: min(900px, calc(100vw - 2rem));
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg) var(--space-xl);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    font-size: var(--font-lg);
+    font-weight: 700;
+    color: var(--text-bright);
+    margin: 0;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: var(--radius-xs);
+    transition: all var(--transition-base);
+}
+
+.modal-close:hover {
+    color: var(--text-bright);
+    background: var(--bg-card-hover);
+}
+
+.modal-body {
+    padding: var(--space-xl);
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-xl);
+    border-top: 1px solid var(--border-color);
 }
 
 /* ─── Keyboard Shortcuts Overlay ────────────────────────── */

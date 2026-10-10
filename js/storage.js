@@ -220,6 +220,194 @@ function getReportCount() {
     return loadReports().length;
 }
 
+/**
+ * Seeds a high-quality set of benchmark demo reports across multiple timestamps.
+ * Enables instant testing of charts, historical trends, and delta comparisons.
+ * @returns {Array} Array of seeded report objects
+ */
+function seedSampleReports() {
+    const now = Date.now();
+    const day = 86400000;
+
+    const samples = [
+        {
+            id: 'rpt_sample_01',
+            title: 'Storefront Baseline (Heavy Assets)',
+            timestamp: now - (day * 3) - 7200000,
+            score: 64,
+            rating: 'Needs Work',
+            preset: 'ecommerce',
+            tags: ['baseline', 'storefront', 'v1.0'],
+            notes: 'Initial production build before asset compression. Large images and unbundled vendor scripts.',
+            breakdown: { cwv: 54, loading: 62, resources: 58, issues: 80 },
+            metrics: {
+                cwv: {
+                    lcp: { value: 3850, formatted: '3.85s', status: 'poor' },
+                    cls: { value: 0.195, formatted: '0.195', status: 'needs-improvement' },
+                    inp: { value: 260,  formatted: '260ms', status: 'needs-improvement' }
+                },
+                loading: {
+                    fcp:      { value: 2150, formatted: '2.15s', status: 'poor' },
+                    ttfb:     { value: 520,  formatted: '520ms', status: 'needs-improvement' },
+                    domLoad:  { value: 2400, formatted: '2.40s', status: 'poor' },
+                    pageLoad: { value: 4650, formatted: '4.65s', status: 'poor' }
+                }
+            },
+            resources: {
+                count: 42,
+                grandTotal: 3420000,
+                grandTotalFormatted: '3.26 MB',
+                totals: {
+                    script: { count: 12, size: 1450000, sizeFormatted: '1.38 MB' },
+                    link:   { count: 4,  size: 240000,  sizeFormatted: '234.4 KB' },
+                    img:    { count: 18, size: 1520000, sizeFormatted: '1.45 MB' },
+                    font:   { count: 4,  size: 150000,  sizeFormatted: '146.5 KB' },
+                    fetch:  { count: 3,  size: 45000,   sizeFormatted: '43.9 KB' },
+                    other:  { count: 1,  size: 15000,   sizeFormatted: '14.6 KB' }
+                }
+            },
+            issues: [
+                { id: 'large-images', severity: 'critical', iTitle: 'Unoptimized Imagery', desc: 'Hero banner PNG exceeds 800 KB' },
+                { id: 'heavy-js', severity: 'warning', iTitle: 'Large Script Payloads', desc: 'Vendor bundle exceeds 500 KB' }
+            ],
+            auditsScore: 70
+        },
+        {
+            id: 'rpt_sample_02',
+            title: 'Storefront v2 (Image Optimization & Lazy Load)',
+            timestamp: now - (day * 2) - 3600000,
+            score: 79,
+            rating: 'Good',
+            preset: 'ecommerce',
+            tags: ['optimization', 'images', 'v1.1'],
+            notes: 'Converted PNG/JPEGs to WebP and added native loading=lazy. CLS and LCP significantly improved.',
+            breakdown: { cwv: 76, loading: 78, resources: 75, issues: 90 },
+            metrics: {
+                cwv: {
+                    lcp: { value: 2600, formatted: '2.60s', status: 'needs-improvement' },
+                    cls: { value: 0.080, formatted: '0.080', status: 'good' },
+                    inp: { value: 210,  formatted: '210ms', status: 'needs-improvement' }
+                },
+                loading: {
+                    fcp:      { value: 1650, formatted: '1.65s', status: 'needs-improvement' },
+                    ttfb:     { value: 380,  formatted: '380ms', status: 'good' },
+                    domLoad:  { value: 1750, formatted: '1.75s', status: 'needs-improvement' },
+                    pageLoad: { value: 3100, formatted: '3.10s', status: 'needs-improvement' }
+                }
+            },
+            resources: {
+                count: 36,
+                grandTotal: 1840000,
+                grandTotalFormatted: '1.75 MB',
+                totals: {
+                    script: { count: 12, size: 1250000, sizeFormatted: '1.19 MB' },
+                    link:   { count: 4,  size: 180000,  sizeFormatted: '175.8 KB' },
+                    img:    { count: 14, size: 260000,  sizeFormatted: '253.9 KB' },
+                    font:   { count: 3,  size: 110000,  sizeFormatted: '107.4 KB' },
+                    fetch:  { count: 2,  size: 28000,   sizeFormatted: '27.3 KB' },
+                    other:  { count: 1,  size: 12000,   sizeFormatted: '11.7 KB' }
+                }
+            },
+            issues: [
+                { id: 'render-blocking-css', severity: 'warning', iTitle: 'Render-blocking CSS', desc: 'Main stylesheet loaded synchronously' }
+            ],
+            auditsScore: 85
+        },
+        {
+            id: 'rpt_sample_03',
+            title: 'SaaS Platform v2 (Code Splitting & SPA Hydration)',
+            timestamp: now - day + 1800000,
+            score: 87,
+            rating: 'Good',
+            preset: 'saas_spa',
+            tags: ['spa', 'code-splitting', 'v2.0'],
+            notes: 'Implemented dynamic route chunks and reduced main-thread script evaluation.',
+            breakdown: { cwv: 88, loading: 85, resources: 84, issues: 95 },
+            metrics: {
+                cwv: {
+                    lcp: { value: 1950, formatted: '1.95s', status: 'good' },
+                    cls: { value: 0.035, formatted: '0.035', status: 'good' },
+                    inp: { value: 145,  formatted: '145ms', status: 'good' }
+                },
+                loading: {
+                    fcp:      { value: 1350, formatted: '1.35s', status: 'good' },
+                    ttfb:     { value: 220,  formatted: '220ms', status: 'good' },
+                    domLoad:  { value: 1420, formatted: '1.42s', status: 'good' },
+                    pageLoad: { value: 2450, formatted: '2.45s', status: 'good' }
+                }
+            },
+            resources: {
+                count: 24,
+                grandTotal: 980000,
+                grandTotalFormatted: '957.0 KB',
+                totals: {
+                    script: { count: 8,  size: 540000, sizeFormatted: '527.3 KB' },
+                    link:   { count: 3,  size: 120000, sizeFormatted: '117.2 KB' },
+                    img:    { count: 6,  size: 190000, sizeFormatted: '185.5 KB' },
+                    font:   { count: 3,  size: 95000,  sizeFormatted: '92.8 KB' },
+                    fetch:  { count: 3,  size: 25000,  sizeFormatted: '24.4 KB' },
+                    other:  { count: 1,  size: 10000,  sizeFormatted: '9.8 KB' }
+                }
+            },
+            issues: [],
+            auditsScore: 92
+        },
+        {
+            id: 'rpt_sample_04',
+            title: 'Optimized Jamstack Build (Production Edge)',
+            timestamp: now - 1800000,
+            score: 97,
+            rating: 'Excellent',
+            preset: 'jamstack_blog',
+            tags: ['jamstack', 'production', 'edge-cdn'],
+            notes: 'Static pre-rendering, edge CDN caching, AVIF hero images, and inlined critical CSS.',
+            breakdown: { cwv: 98, loading: 96, resources: 97, issues: 100 },
+            metrics: {
+                cwv: {
+                    lcp: { value: 920,   formatted: '920ms', status: 'good' },
+                    cls: { value: 0.005, formatted: '0.005', status: 'good' },
+                    inp: { value: 45,   formatted: '45ms',  status: 'good' }
+                },
+                loading: {
+                    fcp:      { value: 680,  formatted: '680ms', status: 'good' },
+                    ttfb:     { value: 75,   formatted: '75ms',  status: 'good' },
+                    domLoad:  { value: 720,  formatted: '720ms', status: 'good' },
+                    pageLoad: { value: 1150, formatted: '1.15s', status: 'good' }
+                }
+            },
+            resources: {
+                count: 14,
+                grandTotal: 340000,
+                grandTotalFormatted: '332.0 KB',
+                totals: {
+                    script: { count: 3, size: 95000,  sizeFormatted: '92.8 KB' },
+                    link:   { count: 2, size: 28000,  sizeFormatted: '27.3 KB' },
+                    img:    { count: 4, size: 140000, sizeFormatted: '136.7 KB' },
+                    font:   { count: 2, size: 62000,  sizeFormatted: '60.5 KB' },
+                    fetch:  { count: 2, size: 10000,  sizeFormatted: '9.8 KB' },
+                    other:  { count: 1, size: 5000,   sizeFormatted: '4.9 KB' }
+                }
+            },
+            issues: [],
+            auditsScore: 98
+        }
+    ];
+
+    const current = loadReports();
+    // Prepend without duplicating IDs
+    const currentIds = new Set(current.map(r => r.id));
+    const toAdd = samples.filter(s => !currentIds.has(s.id));
+    const merged = [...toAdd, ...current];
+    saveReports(merged);
+
+    // Sync to IDB if available
+    if (window.WebPulse && window.WebPulse.idb) {
+        toAdd.forEach(r => window.WebPulse.idb.saveReportIDB(r).catch(() => {}));
+    }
+
+    return merged;
+}
+
 // Expose
 window.WebPulse = window.WebPulse || {};
 window.WebPulse.storage = {
@@ -231,4 +419,5 @@ window.WebPulse.storage = {
     clearAllReports,
     searchReports,
     getReportCount,
+    seedSampleReports,
 };

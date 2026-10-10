@@ -6,9 +6,9 @@
     <meta name="description" content="WebPulse Reports History — View, manage, edit, delete, and compare stored performance analysis snapshots.">
     <title>Reports History — WebPulse Performance Dashboard</title>
     <!-- CSS Design System -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/reports.css">
-    <link rel="stylesheet" href="css/audits.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/reports.css">
+    <link rel="stylesheet" href="../css/audits.css">
 </head>
 <body>
     <!-- Header & Navigation -->
@@ -42,6 +42,9 @@
                 <div class="toolbar-actions">
                     <button class="btn btn-secondary" id="compareReportsBtn" disabled>
                         <span class="btn-icon">⚖️</span> Compare Selected (0)
+                    </button>
+                    <button class="btn btn-secondary" id="seedDemoReportsToolbarBtn" title="Load sample benchmark reports for testing and trends">
+                        <span class="btn-icon">⚡</span> Sample Benchmarks
                     </button>
                     <button class="btn btn-secondary" id="exportAllJSONBtn" disabled title="Export all reports as JSON">
                         <span class="btn-icon">📦</span> Export All (JSON)
@@ -137,6 +140,17 @@
                 <!-- Dynamic comparison table rendered by JS -->
             </div>
             <div class="modal-footer">
+                <div class="modal-footer-export" id="comparisonExportActions">
+                    <button class="btn btn-secondary btn-sm" id="exportCmpCSVBtn" title="Download comparison as CSV">
+                        <span class="btn-icon">📊</span> CSV
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="exportCmpJSONBtn" title="Download comparison as JSON">
+                        <span class="btn-icon">⬇️</span> JSON
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="printCmpBtn" title="Print comparison">
+                        <span class="btn-icon">🖨️</span> PDF / Print
+                    </button>
+                </div>
                 <button class="btn btn-secondary" id="comparisonCloseFooterBtn">Close</button>
             </div>
         </div>
@@ -150,12 +164,12 @@
     </footer>
 
     <!-- Application Script Modules -->
-    <script src="js/settings.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/idb-storage.js"></script>
-    <script src="js/badge-generator.js"></script>
-    <script src="js/export.js"></script>
-    <script src="js/reports.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/idb-storage.js"></script>
+    <script src="../js/badge-generator.js"></script>
+    <script src="../js/export.js"></script>
+    <script src="../js/reports.js"></script>
 </body>
 </html>

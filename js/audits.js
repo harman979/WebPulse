@@ -17,7 +17,8 @@
         const results = [];
 
         // 1. Secure Context / Protocol Check
-        const isHttps = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+        const loc = (typeof window !== 'undefined' && window.location) ? window.location : (typeof location !== 'undefined' ? location : { protocol: 'https:', hostname: 'localhost' });
+        const isHttps = loc.protocol === 'https:' || loc.hostname === 'localhost' || loc.hostname === '127.0.0.1';
         results.push({
             id: 'security-https',
             category: 'security',
@@ -25,7 +26,7 @@
             status: isHttps ? 'pass' : 'fail',
             score: isHttps ? 100 : 0,
             summary: isHttps
-                ? `Connection is encrypted via secure protocol (${location.protocol}).`
+                ? `Connection is encrypted via secure protocol (${loc.protocol}).`
                 : 'Page is served over insecure HTTP plaintext transport.',
             recommendation: 'Enforce HTTPS everywhere with HTTP Strict Transport Security (HSTS) headers and automatic 301 redirects.'
         });

@@ -56,6 +56,10 @@ const el = {
     scenarioPresetSelect: $('scenarioPresetSelect'),
     presetDescText:       $('presetDescText'),
     auditsCardContainer:  $('auditsCardContainer'),
+    // Target Website Input
+    targetSiteInput:       $('targetSiteInput'),
+    targetAnalyzedDisplay: $('targetAnalyzedDisplay'),
+    targetUrlLabel:        $('targetUrlLabel'),
 };
 
 /* ─── Status Helpers ─────────────────────────────────────── */
@@ -243,6 +247,15 @@ async function runAnalysis() {
         const selectedPresetId = el.scenarioPresetSelect ? el.scenarioPresetSelect.value : 'live';
         const preset = window.WebPulse.presets ? window.WebPulse.presets.getPreset(selectedPresetId) : { isLive: true };
 
+        const rawTarget = el.targetSiteInput ? el.targetSiteInput.value.trim() : '';
+        const targetUrl = rawTarget || (preset.isLive ? (window.location.origin || 'Current Local Context') : 'https://example.com');
+        state.targetUrl = targetUrl;
+
+        if (el.targetAnalyzedDisplay && el.targetUrlLabel) {
+            el.targetUrlLabel.textContent = targetUrl;
+            el.targetAnalyzedDisplay.style.display = 'block';
+        }
+
         let metricsData = null;
         let resourceData = null;
 
@@ -352,6 +365,9 @@ async function handleSaveReport() {
         ? el.scenarioPresetSelect.selectedOptions[0].text.split('(')[0].trim()
         : 'Live';
 
+    const targetUrl = state.targetUrl || (el.targetSiteInput ? el.targetSiteInput.value.trim() : '') || window.location.href;
+    const cleanHost = targetUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
     const reportPayload = {
         score:        state.lastScore.score,
         rating:       state.lastScore.rating,
@@ -359,7 +375,8 @@ async function handleSaveReport() {
         metricsData:  state.lastMetrics,
         resourceData: state.lastResources,
         issues:       state.lastIssues,
-        title:        `${presetName} Analysis — ${new Date().toLocaleTimeString()}`
+        url:          targetUrl,
+        title:        `${cleanHost} (${presetName}) — ${new Date().toLocaleTimeString()}`
     };
 
     const { success, report } = window.WebPulse.storage.saveReport(reportPayload);
@@ -415,9 +432,12 @@ function buildLiveReport() {
     const m = state.lastMetrics;
     const r = state.lastResources;
     const s = state.lastScore;
+    const targetUrl = state.targetUrl || (el.targetSiteInput ? el.targetSiteInput.value.trim() : '') || window.location.href;
+    const cleanHost = targetUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
     return {
         id:        'live_' + Date.now(),
-        title:     'Live Analysis \u2014 ' + new Date().toLocaleString(),
+        url:       targetUrl,
+        title:     `${cleanHost} Analysis \u2014 ` + new Date().toLocaleString(),
         timestamp: Date.now(),
         score:     s.score,
         rating:    s.rating,
@@ -485,11 +505,43 @@ function wirePresetSelector() {
     }
 }
 
+function wireTargetControls() {
+    const chips = document.querySelectorAll('.quick-target-chip');
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const url = chip.dataset.url;
+            const profile = chip.dataset.profile;
+            if (url === 'current') {
+                if (el.targetSiteInput) el.targetSiteInput.value = window.location.origin;
+            } else {
+                if (el.targetSiteInput) el.targetSiteInput.value = url;
+            }
+            if (el.scenarioPresetSelect && profile) {
+                el.scenarioPresetSelect.value = profile;
+                const preset = window.WebPulse.presets ? window.WebPulse.presets.getPreset(profile) : null;
+                if (preset && el.presetDescText) {
+                    el.presetDescText.textContent = preset.desc;
+                }
+            }
+        });
+    });
+
+    if (el.targetSiteInput) {
+        el.targetSiteInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                runAnalysis();
+            }
+        });
+    }
+}
+
 /* ─── Init ───────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
     el.runBtn.addEventListener('click', runAnalysis);
     el.saveBtn.addEventListener('click', handleSaveReport);
     wirePresetSelector();
+    wireTargetControls();
     wireFilterButtons();
     wireSortSelect();
     wireExportButtons();

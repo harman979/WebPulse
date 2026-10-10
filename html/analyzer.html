@@ -6,10 +6,10 @@
     <meta name="description" content="WebPulse Real-Time Analyzer — Measure Core Web Vitals, performance score, loading metrics, and resource bottlenecks.">
     <title>Analyzer — WebPulse Performance Dashboard</title>
     <!-- CSS Design System -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/analyzer.css">
-    <link rel="stylesheet" href="css/waterfall.css">
-    <link rel="stylesheet" href="css/audits.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/analyzer.css">
+    <link rel="stylesheet" href="../css/waterfall.css">
+    <link rel="stylesheet" href="../css/audits.css">
 </head>
 <body>
     <!-- Header & Navigation -->
@@ -42,12 +42,21 @@
                 </div>
             </div>
 
-            <!-- Synthetic Scenario & Audit Profile Preset Bar (Day 10) -->
-            <div class="preset-bar-wrapper">
-                <div class="preset-bar-left">
-                    <span class="preset-bar-label">🎯 Audit Scenario Profile:</span>
+            <!-- Target Website URL & Synthetic Scenario Profiling Card -->
+            <div class="target-site-card">
+                <div class="target-site-header">
+                    <span class="target-site-label">
+                        <span>🌐</span> Target Website to Analyze
+                    </span>
+                    <span class="target-site-badge">Native Performance APIs &amp; Architectural Profiling</span>
+                </div>
+                <div class="target-site-input-row">
+                    <div class="target-site-input-wrap">
+                        <span class="target-site-icon">🔗</span>
+                        <input type="url" id="targetSiteInput" class="target-url-input" placeholder="https://example.com" value="https://example.com" spellcheck="false" autocomplete="url" aria-label="Website URL to Analyze">
+                    </div>
                     <div class="preset-select-wrapper">
-                        <select id="scenarioPresetSelect" class="preset-select">
+                        <select id="scenarioPresetSelect" class="preset-select" aria-label="Audit Scenario Profile">
                             <option value="live">🌐 Live Page Context (Current Session)</option>
                             <option value="ecommerce">🛒 E-Commerce Storefront (Heavy Assets)</option>
                             <option value="saas_spa">💻 SaaS Web Application (JS Heavy SPA)</option>
@@ -56,7 +65,15 @@
                         </select>
                     </div>
                 </div>
-                <div class="preset-desc-text" id="presetDescText">
+                <div class="quick-targets-row" id="quickTargetsRow">
+                    <span class="quick-targets-label">Quick Benchmarks:</span>
+                    <button type="button" class="quick-target-chip" data-url="https://example.com" data-profile="jamstack_blog">⚡ Example.com</button>
+                    <button type="button" class="quick-target-chip" data-url="https://github.com" data-profile="saas_spa">💻 GitHub (SaaS SPA)</button>
+                    <button type="button" class="quick-target-chip" data-url="https://amazon.com" data-profile="ecommerce">🛒 Amazon (Storefront)</button>
+                    <button type="button" class="quick-target-chip" data-url="https://nytimes.com" data-profile="news_media">📰 NYTimes (Media)</button>
+                    <button type="button" class="quick-target-chip" data-url="current" data-profile="live">🌐 Current Local Page</button>
+                </div>
+                <div class="preset-desc-text" id="presetDescText" style="margin-top: 0.65rem;">
                     Collects real-time browser Performance APIs from the current active page session.
                 </div>
             </div>
@@ -66,6 +83,9 @@
                 <div class="toolbar-left">
                     <h1>Performance Analyzer</h1>
                     <span class="status-badge" id="analysisStatus">Ready</span>
+                    <div class="target-analyzed-display" id="targetAnalyzedDisplay" style="display:none; font-size:0.82rem; color:var(--text-muted); margin-top:4px;">
+                        Auditing: <span id="targetUrlLabel" style="color:var(--primary); font-family:var(--font-mono, monospace); font-weight:600;"></span>
+                    </div>
                 </div>
                 <div class="toolbar-actions">
                     <button class="btn btn-primary" id="runAnalysisBtn">
@@ -260,22 +280,22 @@
     </footer>
 
     <!-- Application Script Modules -->
-    <script src="js/settings.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/performance.js"></script>
-    <script src="js/resources.js"></script>
-    <script src="js/scoring.js"></script>
-    <script src="js/budgets.js"></script>
-    <script src="js/throttling.js"></script>
-    <script src="js/remediations.js"></script>
-    <script src="js/recommendations.js"></script>
-    <script src="js/presets.js"></script>
-    <script src="js/audits.js"></script>
-    <script src="js/idb-storage.js"></script>
-    <script src="js/badge-generator.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/export.js"></script>
-    <script src="js/waterfall.js"></script>
-    <script src="js/analyzer.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/performance.js"></script>
+    <script src="../js/resources.js"></script>
+    <script src="../js/scoring.js"></script>
+    <script src="../js/budgets.js"></script>
+    <script src="../js/throttling.js"></script>
+    <script src="../js/remediations.js"></script>
+    <script src="../js/recommendations.js"></script>
+    <script src="../js/presets.js"></script>
+    <script src="../js/audits.js"></script>
+    <script src="../js/idb-storage.js"></script>
+    <script src="../js/badge-generator.js"></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/export.js"></script>
+    <script src="../js/waterfall.js"></script>
+    <script src="../js/analyzer.js"></script>
 </body>
 </html>

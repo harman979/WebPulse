@@ -32,6 +32,14 @@ const DEFAULTS = {
         pageLoad: { good: 3000,  needs: 7000  },   // ms
     },
 
+    // Scoring weights (must sum to 1.0)
+    weights: {
+        cwv:       0.40,
+        loading:   0.25,
+        resources: 0.20,
+        issues:    0.15,
+    },
+
     // Performance Budgets & SLA Compliance Limits
     budgets: {
         maxTotalSize: 2000, // KB
@@ -128,7 +136,14 @@ function reset() {
  * Dispatches the "wpSettingsChanged" event on window.
  */
 function dispatch() {
-    window.dispatchEvent(new CustomEvent('wpSettingsChanged', { detail: _current }));
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+        try {
+            const ev = typeof CustomEvent === 'function'
+                ? new CustomEvent('wpSettingsChanged', { detail: _current })
+                : { type: 'wpSettingsChanged', detail: _current };
+            window.dispatchEvent(ev);
+        } catch (_) {}
+    }
 }
 
 /* ─── Theme Application ──────────────────────────────────── */
@@ -138,7 +153,12 @@ function dispatch() {
  */
 function resolveTheme(theme) {
     if (theme === 'system') {
-        return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+            try {
+                return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+            } catch (_) {}
+        }
+        return 'dark';
     }
     return theme;
 }
@@ -189,7 +209,7 @@ function getThreshold(metricKey) {
  * @returns {{ cwv, loading, resources, issues }}
  */
 function getWeights() {
-    return get().weights;
+    return get().weights || DEFAULTS.weights;
 }
 
 /**
@@ -211,9 +231,12 @@ window.WebPulse = window.WebPulse || {};
 window.WebPulse.settings = {
     DEFAULTS,
     get,
+    getSettings: get,
     load,
     update,
+    saveSettings: update,
     reset,
+    resetDefaults: reset,
     applyAll,
     applyTheme,
     resolveTheme,

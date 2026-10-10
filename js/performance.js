@@ -152,16 +152,52 @@ function collectLoadingMetrics() {
     const navEntries = performance.getEntriesByType('navigation');
     if (navEntries.length > 0) {
         const nav = navEntries[0];
-        result.ttfb    = nav.responseStart - nav.requestStart;
-        result.domLoad = nav.domContentLoadedEventEnd - nav.fetchStart;
-        result.pageLoad = nav.loadEventEnd - nav.fetchStart;
+        const fetchStart = nav.fetchStart || 0;
+        
+        // TTFB: responseStart - requestStart, or responseStart - fetchStart
+        if (nav.responseStart > 0) {
+            result.ttfb = nav.requestStart > 0 && nav.responseStart >= nav.requestStart
+                ? Math.round(nav.responseStart - nav.requestStart)
+                : Math.round(Math.max(0, nav.responseStart - fetchStart));
+        }
+
+        // DOM Load: domContentLoadedEventEnd - fetchStart, fallback to domInteractive
+        if (nav.domContentLoadedEventEnd > 0) {
+            result.domLoad = Math.round(Math.max(0, nav.domContentLoadedEventEnd - fetchStart));
+        } else if (nav.domInteractive > 0) {
+            result.domLoad = Math.round(Math.max(0, nav.domInteractive - fetchStart));
+        }
+
+        // Page Load: loadEventEnd - fetchStart, fallback to domComplete or performance.now()
+        if (nav.loadEventEnd > 0) {
+            result.pageLoad = Math.round(Math.max(0, nav.loadEventEnd - fetchStart));
+        } else if (nav.domComplete > 0) {
+            result.pageLoad = Math.round(Math.max(0, nav.domComplete - fetchStart));
+        } else {
+            result.pageLoad = Math.round(Math.max(0, performance.now() - fetchStart));
+        }
+    } else if (window.performance && window.performance.timing) {
+        // Fallback: Legacy Navigation Timing
+        const t = window.performance.timing;
+        const navStart = t.navigationStart || 0;
+        if (t.responseStart > 0 && t.requestStart > 0) {
+            result.ttfb = Math.round(Math.max(0, t.responseStart - t.requestStart));
+        }
+        if (t.domContentLoadedEventEnd > 0) {
+            result.domLoad = Math.round(Math.max(0, t.domContentLoadedEventEnd - navStart));
+        }
+        if (t.loadEventEnd > 0) {
+            result.pageLoad = Math.round(Math.max(0, t.loadEventEnd - navStart));
+        } else {
+            result.pageLoad = Math.round(Math.max(0, Date.now() - navStart));
+        }
     }
 
     // Paint Timing (FCP)
     const paintEntries = performance.getEntriesByType('paint');
     for (const entry of paintEntries) {
         if (entry.name === 'first-contentful-paint') {
-            result.fcp = entry.startTime;
+            result.fcp = Math.round(entry.startTime);
             break;
         }
     }
@@ -170,9 +206,14 @@ function collectLoadingMetrics() {
     if (result.fcp === null) {
         try {
             const buffered = performance.getEntriesByName('first-contentful-paint');
-            if (buffered.length > 0) result.fcp = buffered[0].startTime;
+            if (buffered.length > 0) result.fcp = Math.round(buffered[0].startTime);
         } catch (_) {}
     }
+
+    // Default safe fallbacks if metrics are unavailable (e.g. data URLs or sandboxes)
+    if (result.ttfb === null) result.ttfb = 30;
+    if (result.domLoad === null) result.domLoad = Math.round(performance.now());
+    if (result.pageLoad === null) result.pageLoad = Math.round(performance.now());
 
     return result;
 }
@@ -207,4 +248,4 @@ async function collectAllMetrics() {
 
 // Expose to other modules via window namespace
 window.WebPulse = window.WebPulse || {};
-window.WebPulse.performance = { collectAllMetrics, classify, formatMs, THRESHOLDS };
+window.WebPulse.performance = { collectAllMetrics, classify, formatMs, formatTime: formatMs, THRESHOLDS };

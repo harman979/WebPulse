@@ -29,16 +29,16 @@
             maxPageLoad: 3500
         };
 
-        const totalBytes = resources?.totalTransferSize || 0;
+        const totalBytes = resources?.grandTotal || resources?.totalTransferSize || 0;
         const totalKB = Math.round(totalBytes / 1024);
 
-        const jsBytes = resources?.byType?.script?.size || 0;
+        const jsBytes = resources?.totals?.script?.size || resources?.byType?.script?.size || 0;
         const jsKB = Math.round(jsBytes / 1024);
 
-        const cssBytes = resources?.byType?.link?.size || 0;
+        const cssBytes = resources?.totals?.link?.size || resources?.byType?.link?.size || 0;
         const cssKB = Math.round(cssBytes / 1024);
 
-        const imgBytes = resources?.byType?.img?.size || 0;
+        const imgBytes = resources?.totals?.img?.size || resources?.byType?.img?.size || 0;
         const imgKB = Math.round(imgBytes / 1024);
 
         const lcpVal = metrics?.cwv?.lcp?.value || 0;

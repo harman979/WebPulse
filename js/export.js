@@ -193,17 +193,39 @@ function generateShareURL(report) {
         tg:  (report.tags || []).join(','),
     };
 
-    var encoded = btoa(encodeURIComponent(JSON.stringify(snapshot)));
-    var base    = window.location.href.replace(/[^\/]*$/, '');
+    var encodeB64 = function(str) {
+        if (typeof window !== 'undefined' && typeof window.btoa === 'function') return window.btoa(str);
+        if (typeof btoa === 'function') return btoa(str);
+        if (typeof Buffer !== 'undefined') return Buffer.from(str).toString('base64');
+        return '';
+    };
+
+    var decodeB64 = function(b64) {
+        if (typeof window !== 'undefined' && typeof window.atob === 'function') return window.atob(b64);
+        if (typeof atob === 'function') return atob(b64);
+        if (typeof Buffer !== 'undefined') return Buffer.from(b64, 'base64').toString('binary');
+        return '';
+    };
+
+    var encoded = encodeB64(encodeURIComponent(JSON.stringify(snapshot)));
+    var base    = (typeof window !== 'undefined' && window.location && window.location.href) 
+        ? window.location.href.replace(/[^\/]*$/, '') 
+        : '';
     return base + 'share.html?d=' + encoded;
 }
 
 function loadSharedReport() {
     try {
-        var params  = new URLSearchParams(window.location.search);
+        var params  = new URLSearchParams((typeof window !== 'undefined' && window.location) ? window.location.search : '');
         var encoded = params.get('d');
         if (!encoded) return null;
-        return JSON.parse(decodeURIComponent(atob(encoded)));
+        var decodeB64 = function(b64) {
+            if (typeof window !== 'undefined' && typeof window.atob === 'function') return window.atob(b64);
+            if (typeof atob === 'function') return atob(b64);
+            if (typeof Buffer !== 'undefined') return Buffer.from(b64, 'base64').toString('binary');
+            return '';
+        };
+        return JSON.parse(decodeURIComponent(decodeB64(encoded)));
     } catch (e) {
         console.warn('[WebPulse Export] Failed to decode shared report:', e);
         return null;

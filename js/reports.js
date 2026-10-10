@@ -16,6 +16,7 @@ let state = {
     selectedIds:      new Set(),
     currentQuery:     '',
     openModalReportId: null,   // track which report is open in the detail modal
+    activeComparison: null,
 };
 
 /* ─── DOM References ─────────────────────────────────────── */
@@ -24,6 +25,7 @@ const $ = id => document.getElementById(id);
 const el = {
     reportCountBadge:   $('reportCountBadge'),
     compareBtn:         $('compareReportsBtn'),
+    seedToolbar:        $('seedDemoReportsToolbarBtn'),
     clearAllBtn:        $('clearAllReportsBtn'),
     exportAllJSONBtn:   $('exportAllJSONBtn'),
     searchInput:        $('reportSearchInput'),
@@ -50,6 +52,9 @@ const el = {
     comparisonBody:     $('comparisonBody'),
     comparisonCloseBtn: $('comparisonCloseBtn'),
     comparisonCloseFtr: $('comparisonCloseFooterBtn'),
+    exportCmpCSV:       $('exportCmpCSVBtn'),
+    exportCmpJSON:      $('exportCmpJSONBtn'),
+    printCmp:           $('printCmpBtn'),
 };
 
 /* ─── Utility ────────────────────────────────────────────── */
@@ -108,12 +113,26 @@ function renderTable(reports) {
                 <td colspan="8" class="empty-table">
                     <div class="empty-state">
                         <p>${state.currentQuery ? '🔍 No reports match your search.' : '📁 No saved reports yet.'}</p>
-                        ${!state.currentQuery ? `<a href="analyzer.html" class="btn btn-primary">Run First Analysis ⚡</a>` : ''}
+                        ${!state.currentQuery ? `
+                        <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:1rem;flex-wrap:wrap;">
+                            <a href="analyzer.html" class="btn btn-primary">Run First Analysis ⚡</a>
+                            <button class="btn btn-secondary" id="seedReportsEmptyBtn">⚡ Load Sample Benchmarks</button>
+                        </div>` : ''}
                     </div>
                 </td>
             </tr>`;
         el.selectAllCheckbox.checked       = false;
         el.selectAllCheckbox.indeterminate = false;
+
+        const emptySeedBtn = document.getElementById('seedReportsEmptyBtn');
+        if (emptySeedBtn) {
+            emptySeedBtn.addEventListener('click', () => {
+                if (window.WebPulse.storage) {
+                    window.WebPulse.storage.seedSampleReports();
+                    refresh();
+                }
+            });
+        }
         return;
     }
 
@@ -316,9 +335,12 @@ function openComparisonModal() {
         { label: 'INP',             emoji: '👆', v1: r1.metrics?.cwv?.inp?.value,                    v2: r2.metrics?.cwv?.inp?.value,                    unit: 'ms', lowerBetter: true  },
         { label: 'FCP',             emoji: '🎨', v1: r1.metrics?.loading?.fcp?.value,                v2: r2.metrics?.loading?.fcp?.value,                unit: 'ms', lowerBetter: true  },
         { label: 'TTFB',            emoji: '🌐', v1: r1.metrics?.loading?.ttfb?.value,               v2: r2.metrics?.loading?.ttfb?.value,               unit: 'ms', lowerBetter: true  },
+        { label: 'DOM Loading',     emoji: '🌳', v1: r1.metrics?.loading?.domLoad?.value,            v2: r2.metrics?.loading?.domLoad?.value,            unit: 'ms', lowerBetter: true  },
         { label: 'Page Load',       emoji: '⏱️', v1: r1.metrics?.loading?.pageLoad?.value,           v2: r2.metrics?.loading?.pageLoad?.value,           unit: 'ms', lowerBetter: true  },
-        { label: 'Resources',       emoji: '📦', v1: r1.resources?.count,                            v2: r2.resources?.count,                            unit: '',   lowerBetter: true  },
-        { label: 'Total Size',      emoji: '💾', v1: r1.resources?.grandTotal,                       v2: r2.resources?.grandTotal,                       unit: 'B',  lowerBetter: true, formatFn: window.WebPulse.resources?.formatBytes },
+        { label: 'Resources Count', emoji: '📦', v1: r1.resources?.count,                            v2: r2.resources?.count,                            unit: '',   lowerBetter: true  },
+        { label: 'Total Payload',   emoji: '💾', v1: r1.resources?.grandTotal,                       v2: r2.resources?.grandTotal,                       unit: 'B',  lowerBetter: true, formatFn: window.WebPulse.resources?.formatBytes },
+        { label: 'Audits Score',    emoji: '🛡️', v1: r1.auditsScore,                                 v2: r2.auditsScore,                                 unit: '%',  lowerBetter: false },
+        { label: 'Bottlenecks',     emoji: '⚠️', v1: (r1.issues || []).length,                       v2: (r2.issues || []).length,                       unit: '',   lowerBetter: true  },
     ];
 
     function fmt(val, unit, fn) {
@@ -333,7 +355,6 @@ function openComparisonModal() {
         if (v1 == null || v2 == null || isNaN(v1) || isNaN(v2)) return '<span class="delta-badge delta-neutral">N/A</span>';
         if (v1 === v2) return '<span class="delta-badge delta-neutral">Same</span>';
         const diff     = v2 - v1;            // positive = B went up, negative = B went down
-        const absDiff  = Math.abs(diff);
         const pct      = Math.abs((diff / (v1 || 1)) * 100).toFixed(1);
         // "Better" for B: lowerBetter → diff < 0 (B lower), else diff > 0 (B higher)
         const bBetter  = lowerBetter ? diff < 0 : diff > 0;
@@ -351,6 +372,8 @@ function openComparisonModal() {
         const cls    = s1 > s2 ? 'a' : 'b';
         return `<div class="comparison-winner winner-${cls}">🏆 <strong>${escHtml(winner.title)}</strong> wins by ${margin} points</div>`;
     })();
+
+    state.activeComparison = { r1, r2, rows, fmt };
 
     el.comparisonBody.innerHTML = `
         ${winnerBanner}
@@ -469,6 +492,14 @@ function wireToolbar() {
         refresh();
     });
 
+    // Seed Demo Reports Toolbar Button
+    el.seedToolbar?.addEventListener('click', () => {
+        if (window.WebPulse && window.WebPulse.storage) {
+            window.WebPulse.storage.seedSampleReports();
+            refresh();
+        }
+    });
+
     // Export All as JSON
     el.exportAllJSONBtn?.addEventListener('click', () => {
         const all = window.WebPulse.storage.getAllReports();
@@ -531,6 +562,54 @@ function wireModals() {
     el.comparisonCloseBtn?.addEventListener('click', closeComparisonModal);
     el.comparisonCloseFtr?.addEventListener('click', closeComparisonModal);
     el.comparisonBackdrop?.addEventListener('click', closeComparisonModal);
+
+    // Comparison export buttons
+    el.exportCmpCSV?.addEventListener('click', () => {
+        if (!state.activeComparison) return;
+        const { r1, r2, rows, fmt } = state.activeComparison;
+        let csv = `Metric,"${r1.title}","${r2.title}",Delta\n`;
+        rows.forEach(r => {
+            const v1 = fmt(r.v1, r.unit, r.formatFn);
+            const v2 = fmt(r.v2, r.unit, r.formatFn);
+            const diff = (r.v1 != null && r.v2 != null) ? (r.v2 - r.v1) : '';
+            csv += `"${r.label}","${v1}","${v2}","${diff}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `webpulse_comparison_${Date.now()}.csv`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+    });
+
+    el.exportCmpJSON?.addEventListener('click', () => {
+        if (!state.activeComparison) return;
+        const { r1, r2, rows, fmt } = state.activeComparison;
+        const data = {
+            comparisonId: `cmp_${Date.now()}`,
+            timestamp: Date.now(),
+            reportA: { id: r1.id, title: r1.title, score: r1.score, timestamp: r1.timestamp },
+            reportB: { id: r2.id, title: r2.title, score: r2.score, timestamp: r2.timestamp },
+            metrics: rows.map(r => ({
+                label: r.label,
+                valA: fmt(r.v1, r.unit, r.formatFn),
+                valB: fmt(r.v2, r.unit, r.formatFn),
+                unit: r.unit
+            }))
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `webpulse_comparison_${Date.now()}.json`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+    });
+
+    el.printCmp?.addEventListener('click', () => {
+        window.print();
+    });
 
     // Escape key closes whichever modal is open
     document.addEventListener('keydown', (e) => {
